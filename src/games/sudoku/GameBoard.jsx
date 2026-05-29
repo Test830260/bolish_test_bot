@@ -1,13 +1,23 @@
-import {
-  saveGame,
-  loadGame,
-  clearGame
-} from "./storage";
 import { useEffect, useState } from "react";
+
 import { createPuzzle } from "./sudoku";
+
+import useTimer from "./hooks/useTimer";
+import useHistory from "./hooks/useHistory";
+import useRating from "./hooks/useRating";
+import useStats from "./hooks/useStats";
+
+import TopBar from "./components/TopBar";
+import Board from "./components/Board";
+import NumberPad from "./components/NumberPad";
+import ActionBar from "./components/ActionBar";
+import VictoryModal from "./components/VictoryModal";
+import GameOverModal from "./components/GameOverModal";
+import StatsModal from "./components/StatsModal";
 
 export default function GameBoard() {
   const [level, setLevel] = useState("easy");
+
   const [board, setBoard] = useState([]);
   const [solution, setSolution] = useState([]);
   const [fixedCells, setFixedCells] = useState([]);
@@ -20,55 +30,61 @@ export default function GameBoard() {
   const [gameOver, setGameOver] = useState(false);
   const [victory, setVictory] = useState(false);
 
-  const [seconds, setSeconds] = useState(0);
+  const [showStats, setShowStats] =
+    useState(false);
+
+  const [hints, setHints] = useState(3);
+  const [undoCount, setUndoCount] =
+    useState(5);
+
+  const {
+    seconds,
+    formatTime,
+    resetTimer
+  } = useTimer(
+    gameOver,
+    victory
+  );
+
+  const {
+    saveMove,
+    undo,
+    clearHistory
+  } = useHistory();
+
+  const {
+    score,
+    addCorrectMove,
+    addWin,
+    addMistake,
+    useHintPenalty,
+    useUndoPenalty,
+    getRank
+  } = useRating();
+
+  const {
+    stats,
+    addWin: addStatsWin,
+    addLoss: addStatsLoss,
+    addHintUse,
+    addUndoUse,
+    getWinRate
+  } = useStats();
 
   useEffect(() => {
     startGame("easy");
   }, []);
 
-  useEffect(() => {
-    if (gameOver || victory) return;
-
-    const timer = setInterval(() => {
-      setSeconds((prev) => prev + 1);
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [gameOver, victory]);
-
-  useEffect(() => {
-    const saveData = {
-      board,
-      solution,
-      fixedCells,
-      level,
-      errors,
-      filled,
-      seconds
-    };
-
-    if (board.length) {
-      localStorage.setItem(
-        "sudoku-save",
-        JSON.stringify(saveData)
-      );
-    }
-  }, [
-    board,
-    solution,
-    fixedCells,
-    level,
-    errors,
-    filled,
-    seconds
-  ]);
-
   function startGame(difficulty) {
-    const game = createPuzzle(difficulty);
+    const game =
+      createPuzzle(difficulty);
 
-    const fixed = game.puzzle.map((row) =>
-      row.map((cell) => cell !== 0)
-    );
+    const fixed =
+      game.puzzle.map(row =>
+        row.map(
+          cell => cell !== 0
+        )
+      );
 
     setBoard(game.puzzle);
     setSolution(game.solution);
@@ -79,226 +95,250 @@ export default function GameBoard() {
     setSelected(null);
 
     setErrors(0);
-
     setGameOver(false);
-
     setVictory(false);
 
-    setSeconds(0);
+    setHints(3);
+    setUndoCount(5);
 
-    const count = game.puzzle
-      .flat()
-      .filter((x) => x !== 0).length;
+    resetTimer();
+    clearHistory();
+
+    const count =
+      game.puzzle
+        .flat()
+        .filter(
+          x => x !== 0
+        ).length;
 
     setFilled(count);
   }
 
-  function chooseCell(row, col) {
-    if (gameOver || victory) return;
+  function chooseCell(
+    row,
+    col
+  ) {
+    if (
+      gameOver ||
+      victory
+    )
+      return;
 
-    if (fixedCells[row]?.[col]) return;
+    if (
+      fixedCells[row]?.[col]
+    )
+      return;
 
-    setSelected({ row, col });
+    setSelected({
+      row,
+      col
+    });
   }
 
-  function enterNumber(num) {
-    if (!selected) return;
+  function enterNumber(
+    num
+  ) {
+    if (
+      !selected ||
+      gameOver ||
+      victory
+    )
+      return;
 
-    if (gameOver || victory) return;
+    const {
+      row,
+      col
+    } = selected;
 
-    const { row, col } = selected;
+    if (
+      fixedCells[row][col]
+    )
+      return;
 
-    if (fixedCells[row][col]) return;
+    const copy =
+      board.map(r => [
+        ...r
+      ]);
 
-    const copy = board.map((r) => [...r]);
+    if (
+      solution[row][col] ===
+      num
+    ) {
+      saveMove(board);
 
-    if (solution[row][col] === num) {
-      if (copy[row][col] === 0) {
-        copy[row][col] = num;
+      copy[row][col] = num;
 
-        setBoard(copy);
+      setBoard(copy);
 
-        const newFilled = filled + 1;
+      addCorrectMove();
 
-        setFilled(newFilled);
+      const newFilled =
+        filled + 1;
 
-        if (newFilled === 81) {
-          setVictory(true);
-        }
+      setFilled(
+        newFilled
+      );
+
+      if (
+        newFilled === 81
+      ) {
+        addWin(level);
+
+        addStatsWin(
+          level,
+          seconds
+        );
+
+        setVictory(
+          true
+        );
       }
     } else {
-      const newErrors = errors + 1;
+      addMistake();
 
-      setErrors(newErrors);
+      const nextErrors =
+        errors + 1;
 
-      if (newErrors >= 3) {
-        setGameOver(true);
+      setErrors(
+        nextErrors
+      );
+
+      if (
+        nextErrors >= 3
+      ) {
+        addStatsLoss();
+
+        setGameOver(
+          true
+        );
       }
     }
   }
 
   function eraseCell() {
-    if (!selected) return;
+    if (!selected)
+      return;
 
-    const { row, col } = selected;
+    const {
+      row,
+      col
+    } = selected;
 
-    if (fixedCells[row][col]) return;
+    if (
+      fixedCells[row][col]
+    )
+      return;
 
-    if (board[row][col] === 0) return;
-
-    const copy = board.map((r) => [...r]);
+    const copy =
+      board.map(r => [
+        ...r
+      ]);
 
     copy[row][col] = 0;
 
     setBoard(copy);
-
-    setFilled((prev) => prev - 1);
   }
 
-  function formatTime() {
-    const mins = Math.floor(seconds / 60);
+  function useHint() {
+    if (
+      !selected ||
+      hints <= 0
+    )
+      return;
 
-    const secs = seconds % 60;
+    const {
+      row,
+      col
+    } = selected;
 
-    return `${String(mins).padStart(2, "0")}:${String(
-      secs
-    ).padStart(2, "0")}`;
+    const copy =
+      board.map(r => [
+        ...r
+      ]);
+
+    copy[row][col] =
+      solution[row][col];
+
+    setBoard(copy);
+
+    setHints(
+      prev => prev - 1
+    );
+
+    useHintPenalty();
+    addHintUse();
+  }
+
+  function undoMove() {
+    if (
+      undoCount <= 0
+    )
+      return;
+
+    const previous =
+      undo(board);
+
+    setBoard(previous);
+
+    setUndoCount(
+      prev => prev - 1
+    );
+
+    useUndoPenalty();
+    addUndoUse();
   }
 
   return (
     <>
+      <TopBar
+        seconds={seconds}
+        score={score}
+        hints={hints}
+        undoCount={
+          undoCount
+        }
+      />
+
+      <Board
+        board={board}
+        selected={
+          selected
+        }
+        fixedCells={
+          fixedCells
+        }
+        chooseCell={
+          chooseCell
+        }
+      />
+
+      <NumberPad
+        enterNumber={
+          enterNumber
+        }
+      />
+
+      <ActionBar
+        hints={hints}
+        undoCount={
+          undoCount
+        }
+        useHint={
+          useHint
+        }
+        undoMove={
+          undoMove
+        }
+        eraseCell={
+          eraseCell
+        }
+      />
+
       <div
-        style={{
-          textAlign: "center",
-          marginBottom: "15px",
-          color: "#38bdf8",
-          fontSize: "22px",
-          fontWeight: "bold"
-        }}
+        className="info"
       >
-        ⏱ {formatTime()}
-      </div>
-
-      <div className="difficulty">
-
-        <button
-          className={`diff-btn ${
-            level === "easy" ? "active" : ""
-          }`}
-          onClick={() => startGame("easy")}
-        >
-          Oson
-        </button>
-
-        <button
-          className={`diff-btn ${
-            level === "medium" ? "active" : ""
-          }`}
-          onClick={() => startGame("medium")}
-        >
-          O'rta
-        </button>
-
-        <button
-          className={`diff-btn ${
-            level === "hard" ? "active" : ""
-          }`}
-          onClick={() => startGame("hard")}
-        >
-          Qiyin
-        </button>
-      </div>
-
-      <div className="board">
-        {board.flat().map((cell, i) => {
-          const row = Math.floor(i / 9);
-          const col = i % 9;
-
-          const isSelected =
-            selected &&
-            selected.row === row &&
-            selected.col === col;
-
-          const sameRow =
-            selected &&
-            selected.row === row;
-
-          const sameCol =
-            selected &&
-            selected.col === col;
-
-          const sameBox =
-            selected &&
-            Math.floor(selected.row / 3) ===
-              Math.floor(row / 3) &&
-            Math.floor(selected.col / 3) ===
-              Math.floor(col / 3);
-
-          return (
-            <div
-              key={i}
-              onClick={() => chooseCell(row, col)}
-              className="cell"
-              style={{
-                background: isSelected
-                  ? "#38bdf855"
-                  : sameRow || sameCol || sameBox
-                  ? "#1f2b45"
-                  : "#172033",
-
-                borderRight:
-                  col === 2 || col === 5
-                    ? "4px solid #38bdf8"
-                    : "1px solid #2e3b52",
-
-                borderBottom:
-                  row === 2 || row === 5
-                    ? "4px solid #38bdf8"
-                    : "1px solid #2e3b52",
-
-                cursor: fixedCells[row]?.[col]
-                  ? "default"
-                  : "pointer",
-
-                fontWeight: fixedCells[row]?.[col]
-                  ? "700"
-                  : "400",
-
-                color: fixedCells[row]?.[col]
-                  ? "#ffffff"
-                  : "#7dd3fc",
-
-                transition: "all .18s ease"
-              }}
-            >
-              {cell === 0 ? "" : cell}
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="numbers">
-        {[1,2,3,4,5,6,7,8,9].map((n) => (
-          <button
-            key={n}
-            className="num-btn"
-            onClick={() => enterNumber(n)}
-          >
-            {n}
-          </button>
-        ))}
-      </div>
-
-      <button
-        className="delete-btn"
-        onClick={eraseCell}
-      >
-        ❌ O'chirish
-      </button>
-
-      <div className="info">
         <span>
-          ❌ Xatolar: {errors}/3
+          ❌ {errors}/3
         </span>
 
         <span>
@@ -308,124 +348,73 @@ export default function GameBoard() {
 
       <button
         className="newgame"
-        onClick={() => startGame(level)}
+        onClick={() =>
+          startGame(level)
+        }
       >
         🔄 Yangi o'yin
       </button>
 
-      {victory && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,.75)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 999
-          }}
-        >
-          <div
-            style={{
-              width: "90%",
-              maxWidth: "420px",
-              background: "#172033",
-              borderRadius: "24px",
-              padding: "30px",
-              textAlign: "center",
-              border: "2px solid #38bdf8",
-              boxShadow:
-                "0 0 35px rgba(56,189,248,.4)"
-            }}
-          >
-            <h1
-              style={{
-                color: "#38bdf8",
-                marginBottom: "15px"
-              }}
-            >
-              🏆 G'ALABA!
-            </h1>
+      <button
+        className="stats-btn"
+        onClick={() =>
+          setShowStats(
+            true
+          )
+        }
+      >
+        📊 Statistika
+      </button>
 
-            <p
-              style={{
-                fontSize: "20px",
-                color: "#ffffff"
-              }}
-            >
-              Sudoku muvaffaqiyatli yechildi!
-            </p>
+      <VictoryModal
+        level={level}
+        score={score}
+        time={formatTime()}
+        onRestart={() =>
+          startGame(level)
+        }
+      />
 
-            <p
-              style={{
-                color: "#94a3b8"
-              }}
-            >
-              ⏱ Vaqt: {formatTime()}
-            </p>
+      <GameOverModal
+        level={level}
+        score={score}
+        onRestart={() =>
+          startGame(level)
+        }
+      />
 
-            <button
-              className="newgame"
-              onClick={() => startGame(level)}
-            >
-              🔄 Yana o'ynash
-            </button>
-          </div>
-        </div>
-      )}
-
-      {gameOver && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,.75)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 999
-          }}
-        >
-          <div
-            style={{
-              width: "90%",
-              maxWidth: "420px",
-              background: "#172033",
-              borderRadius: "24px",
-              padding: "30px",
-              textAlign: "center",
-              border: "2px solid #ef4444",
-              boxShadow:
-                "0 0 35px rgba(239,68,68,.4)"
-            }}
-          >
-            <h1
-              style={{
-                color: "#ef4444",
-                marginBottom: "15px"
-              }}
-            >
-              💀 GAME OVER
-            </h1>
-
-            <p
-              style={{
-                fontSize: "20px",
-                color: "#ffffff"
-              }}
-            >
-              3 ta xato qildingiz
-            </p>
-
-            <button
-              className="newgame"
-              onClick={() => startGame(level)}
-            >
-              🔄 Qayta boshlash
-            </button>
-          </div>
-        </div>
-      )}
+      <StatsModal
+        isOpen={
+          showStats
+        }
+        onClose={() =>
+          setShowStats(
+            false
+          )
+        }
+        stats={{
+          points:
+            score,
+          wins:
+            stats.wins,
+          losses:
+            stats.losses,
+          winRate:
+            getWinRate(),
+          hintsUsed:
+            stats.hintsUsed,
+          undosUsed:
+            stats.undosUsed,
+          bestEasy:
+            stats.bestEasy,
+          bestMedium:
+            stats.bestMedium,
+          bestHard:
+            stats.bestHard,
+          rank:
+            getRank()
+        }}
+      />
     </>
   );
 }
