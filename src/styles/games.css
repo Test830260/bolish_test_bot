@@ -1,0 +1,223 @@
+.games-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* HEADER */
+
+.page-header {
+  text-align: center;
+}
+
+.page-header h1 {
+  margin: 0;
+
+  font-size: 42px;
+
+  color: #38bdf8;
+
+  text-shadow:
+    0 0 15px
+    rgba(56,189,248,.4);
+}
+
+.page-header p {
+  color: #94a3b8;
+
+  margin-top: 8px;
+}
+
+/* SUDOKU CARD */
+
+.game-card {
+  display: flex;
+
+  align-items: center;
+
+  gap: 20px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(23,32,51,.95),
+      rgba(31,43,69,.95)
+    );
+
+  border-radius: 28px;
+
+  padding: 24px;
+
+  border:
+    1px solid
+    rgba(56,189,248,.25);
+
+  box-shadow:
+    0 0 30px
+    rgba(56,189,248,.15);
+
+  cursor: pointer;
+
+  transition: .25s;
+}
+
+.game-card:hover {
+  transform:
+    translateY(-4px);
+
+  box-shadow:
+    0 0 40px
+    rgba(56,189,248,.25);
+}
+
+.game-icon {
+  font-size: 64px;
+
+  min-width: 80px;
+
+  text-align: center;
+
+  filter:
+    drop-shadow(
+      0 0 15px
+      rgba(56,189,248,.4)
+    );
+}
+
+.game-info {
+  flex: 1;
+}
+
+.game-info h2 {
+  margin: 0;
+
+  color: white;
+
+  font-size: 30px;
+}
+
+.game-info p {
+  color: #94a3b8;
+
+  margin-top: 6px;
+}
+
+.play-arrow {
+  font-size: 34px;
+
+  color: #38bdf8;
+}
+
+/* TAGS */
+
+.game-tags {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 8px;
+
+  margin-top: 12px;
+}
+
+.game-tags span {
+  padding: 6px 12px;
+
+  border-radius: 999px;
+
+  background:
+    rgba(56,189,248,.12);
+
+  color: #7dd3fc;
+
+  font-size: 13px;
+
+  border:
+    1px solid
+    rgba(56,189,248,.15);
+}
+
+/* COMING SOON */
+
+.coming-section h2 {
+  color: white;
+
+  margin-bottom: 15px;
+}
+
+.coming-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2,1fr);
+
+  gap: 14px;
+}
+
+.coming-card {
+  height: 110px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  text-align: center;
+
+  border-radius: 20px;
+
+  background:
+    rgba(23,32,51,.9);
+
+  border:
+    1px solid
+    rgba(255,255,255,.05);
+
+  color: #cbd5e1;
+
+  font-size: 18px;
+
+  font-weight: 700;
+
+  transition: .25s;
+}
+
+.coming-card:hover {
+  transform:
+    translateY(-3px);
+
+  border-color:
+    rgba(56,189,248,.25);
+
+  box-shadow:
+    0 0 20px
+    rgba(56,189,248,.15);
+}
+
+/* MOBILE */
+
+@media (max-width: 480px) {
+
+  .page-header h1 {
+    font-size: 34px;
+  }
+
+  .game-card {
+    padding: 18px;
+  }
+
+  .game-icon {
+    font-size: 50px;
+    min-width: 60px;
+  }
+
+  .game-info h2 {
+    font-size: 24px;
+  }
+
+  .coming-card {
+    height: 90px;
+    font-size: 16px;
+  }
+  }
