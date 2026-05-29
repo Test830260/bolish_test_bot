@@ -18,7 +18,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <div className="title">🧩 Sudoku</div>
+      <div className="title">🧩 SUDOKU</div>
 
       <div className="difficulty">
         <button className="diff-btn active">Oson</button>
@@ -27,15 +27,31 @@ export default function App() {
       </div>
 
       <div className="board">
-        {board.flat().map((cell, i) => (
-          <div
-            key={i}
-            onClick={() => setSelected(i)}
-            className={`cell ${selected === i ? "selected" : ""}`}
-          >
-            {cell === 0 ? "" : cell}
-          </div>
-        ))}
+        {board.flat().map((cell, i) => {
+          const row = Math.floor(i / 9);
+          const col = i % 9;
+
+          return (
+            <div
+              key={i}
+              onClick={() => setSelected(i)}
+              className={`cell ${selected === i ? "selected" : ""}`}
+              style={{
+                borderRight:
+                  col === 2 || col === 5
+                    ? "3px solid #38bdf8"
+                    : "1px solid #2e3b52",
+
+                borderBottom:
+                  row === 2 || row === 5
+                    ? "3px solid #38bdf8"
+                    : "1px solid #2e3b52"
+              }}
+            >
+              {cell === 0 ? "" : cell}
+            </div>
+          );
+        })}
       </div>
 
       <div className="numbers">
