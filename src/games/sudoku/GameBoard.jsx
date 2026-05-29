@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 
-import { createPuzzle } from "./sudoku";
+import useSudokuGame from "./hooks/useSudokuGame";
 
 import useTimer from "./hooks/useTimer";
-import useHistory from "./hooks/useHistory";
 import useRating from "./hooks/useRating";
 import useStats from "./hooks/useStats";
 
@@ -16,276 +15,45 @@ import GameOverModal from "./components/GameOverModal";
 import StatsModal from "./components/StatsModal";
 
 export default function GameBoard() {
-  const [level, setLevel] = useState("easy");
-
-  const [board, setBoard] = useState([]);
-  const [solution, setSolution] = useState([]);
-  const [fixedCells, setFixedCells] = useState([]);
-
-  const [selected, setSelected] = useState(null);
-
-  const [errors, setErrors] = useState(0);
-  const [filled, setFilled] = useState(0);
-
-  const [gameOver, setGameOver] = useState(false);
-  const [victory, setVictory] = useState(false);
+  const game = useSudokuGame();
 
   const [showStats, setShowStats] =
     useState(false);
 
-  const [hints, setHints] = useState(3);
+  const [hints, setHints] =
+    useState(3);
+
   const [undoCount, setUndoCount] =
     useState(5);
 
   const {
     seconds,
-    formatTime,
-    resetTimer
+    formatTime
   } = useTimer(
-    gameOver,
-    victory
+    game.gameOver,
+    game.victory
   );
 
   const {
-    saveMove,
-    undo,
-    clearHistory
-  } = useHistory();
-
-  const {
     score,
-    addCorrectMove,
-    addWin,
-    addMistake,
-    useHintPenalty,
-    useUndoPenalty,
     getRank
   } = useRating();
 
   const {
     stats,
-    addWin: addStatsWin,
-    addLoss: addStatsLoss,
-    addHintUse,
-    addUndoUse,
     getWinRate
   } = useStats();
 
   useEffect(() => {
-    startGame("easy");
+    game.startGame("easy");
   }, []);
 
-  function startGame(difficulty) {
-    const game =
-      createPuzzle(difficulty);
-
-    const fixed =
-      game.puzzle.map(row =>
-        row.map(
-          cell => cell !== 0
-        )
-      );
-
-    setBoard(game.puzzle);
-    setSolution(game.solution);
-    setFixedCells(fixed);
-
-    setLevel(difficulty);
-
-    setSelected(null);
-
-    setErrors(0);
-    setGameOver(false);
-    setVictory(false);
-
-    setHints(3);
-    setUndoCount(5);
-
-    resetTimer();
-    clearHistory();
-
-    const count =
-      game.puzzle
-        .flat()
-        .filter(
-          x => x !== 0
-        ).length;
-
-    setFilled(count);
-  }
-
-  function chooseCell(
-    row,
-    col
-  ) {
-    if (
-      gameOver ||
-      victory
-    )
-      return;
-
-    if (
-      fixedCells[row]?.[col]
-    )
-      return;
-
-    setSelected({
-      row,
-      col
-    });
-  }
-
-  function enterNumber(
-    num
-  ) {
-    if (
-      !selected ||
-      gameOver ||
-      victory
-    )
-      return;
-
-    const {
-      row,
-      col
-    } = selected;
-
-    if (
-      fixedCells[row][col]
-    )
-      return;
-
-    const copy =
-      board.map(r => [
-        ...r
-      ]);
-
-    if (
-      solution[row][col] ===
-      num
-    ) {
-      saveMove(board);
-
-      copy[row][col] = num;
-
-      setBoard(copy);
-
-      addCorrectMove();
-
-      const newFilled =
-        filled + 1;
-
-      setFilled(
-        newFilled
-      );
-
-      if (
-        newFilled === 81
-      ) {
-        addWin(level);
-
-        addStatsWin(
-          level,
-          seconds
-        );
-
-        setVictory(
-          true
-        );
-      }
-    } else {
-      addMistake();
-
-      const nextErrors =
-        errors + 1;
-
-      setErrors(
-        nextErrors
-      );
-
-      if (
-        nextErrors >= 3
-      ) {
-        addStatsLoss();
-
-        setGameOver(
-          true
-        );
-      }
-    }
-  }
-
-  function eraseCell() {
-    if (!selected)
-      return;
-
-    const {
-      row,
-      col
-    } = selected;
-
-    if (
-      fixedCells[row][col]
-    )
-      return;
-
-    const copy =
-      board.map(r => [
-        ...r
-      ]);
-
-    copy[row][col] = 0;
-
-    setBoard(copy);
-  }
-
   function useHint() {
-    if (
-      !selected ||
-      hints <= 0
-    )
-      return;
-
-    const {
-      row,
-      col
-    } = selected;
-
-    const copy =
-      board.map(r => [
-        ...r
-      ]);
-
-    copy[row][col] =
-      solution[row][col];
-
-    setBoard(copy);
-
-    setHints(
-      prev => prev - 1
-    );
-
-    useHintPenalty();
-    addHintUse();
+    // keyin to'ldiramiz
   }
 
   function undoMove() {
-    if (
-      undoCount <= 0
-    )
-      return;
-
-    const previous =
-      undo(board);
-
-    setBoard(previous);
-
-    setUndoCount(
-      prev => prev - 1
-    );
-
-    useUndoPenalty();
-    addUndoUse();
+    // keyin to'ldiramiz
   }
 
   return (
@@ -294,62 +62,44 @@ export default function GameBoard() {
         seconds={seconds}
         score={score}
         hints={hints}
-        undoCount={
-          undoCount
-        }
+        undoCount={undoCount}
       />
 
       <Board
-        board={board}
-        selected={
-          selected
-        }
-        fixedCells={
-          fixedCells
-        }
-        chooseCell={
-          chooseCell
-        }
+        board={game.board}
+        selected={game.selected}
+        fixedCells={game.fixedCells}
+        chooseCell={game.chooseCell}
       />
 
       <NumberPad
-        enterNumber={
-          enterNumber
-        }
+        enterNumber={game.enterNumber}
       />
 
       <ActionBar
         hints={hints}
-        undoCount={
-          undoCount
-        }
-        useHint={
-          useHint
-        }
-        undoMove={
-          undoMove
-        }
-        eraseCell={
-          eraseCell
-        }
+        undoCount={undoCount}
+        useHint={useHint}
+        undoMove={undoMove}
+        eraseCell={game.eraseCell}
       />
 
-      <div
-        className="info"
-      >
+      <div className="info">
         <span>
-          ❌ {errors}/3
+          ❌ {game.errors}/3
         </span>
 
         <span>
-          📦 {filled}/81
+          📦 {game.filled}/81
         </span>
       </div>
 
       <button
         className="newgame"
         onClick={() =>
-          startGame(level)
+          game.startGame(
+            game.level
+          )
         }
       >
         🔄 Yangi o'yin
@@ -358,49 +108,45 @@ export default function GameBoard() {
       <button
         className="stats-btn"
         onClick={() =>
-          setShowStats(
-            true
-          )
+          setShowStats(true)
         }
       >
         📊 Statistika
       </button>
 
       <VictoryModal
-        level={level}
+        isOpen={game.victory}
+        level={game.level}
         score={score}
         time={formatTime()}
         onRestart={() =>
-          startGame(level)
+          game.startGame(
+            game.level
+          )
         }
       />
 
       <GameOverModal
-        level={level}
+        isOpen={game.gameOver}
+        level={game.level}
         score={score}
         onRestart={() =>
-          startGame(level)
+          game.startGame(
+            game.level
+          )
         }
       />
 
       <StatsModal
-        isOpen={
-          showStats
-        }
+        isOpen={showStats}
         onClose={() =>
-          setShowStats(
-            false
-          )
+          setShowStats(false)
         }
         stats={{
-          points:
-            score,
-          wins:
-            stats.wins,
-          losses:
-            stats.losses,
-          winRate:
-            getWinRate(),
+          points: score,
+          wins: stats.wins,
+          losses: stats.losses,
+          winRate: getWinRate(),
           hintsUsed:
             stats.hintsUsed,
           undosUsed:
@@ -411,8 +157,7 @@ export default function GameBoard() {
             stats.bestMedium,
           bestHard:
             stats.bestHard,
-          rank:
-            getRank()
+          rank: getRank()
         }}
       />
     </>
