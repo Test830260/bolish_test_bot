@@ -11,21 +11,32 @@ export default function GameBoard() {
   const [filled, setFilled] = useState(0);
   const [gameOver, setGameOver] = useState(false);
 
+  // ⏱ Taymer
+  const [seconds, setSeconds] = useState(0);
+
+  useuseEffect(() => {
+  startGame("easy");
+}, []);
+
+useEffect(() => {
+  if (gameOver) return;
+
+  const timer = setInterval(() => {
+    setSeconds((s) => s + 1);
+  }, 1000);
+
+  return () => clearInterval(timer);
+}, [gameOver]);
+
   useEffect(() => {
-    startGame("easy");
-  }, []);
+    if (gameOver) return;
 
-  function startGame(difficulty) {
-    const game = createPuzzle(difficulty);
+    const timer = setInterval(() => {
+      setSeconds((s) => s + 1);
+    }, 1000);
 
-    setBoard(game.puzzle);
-    setSolution(game.solution);
-
-    setFixedCells(
-      game.puzzle.map((row) =>
-        row.map((cell) => cell !== 0)
-      )
-    );
+    return () => clearInterval(timer);
+  }, [gameOver]);
 
     setLevel(difficulty);
     setSelected(null);
