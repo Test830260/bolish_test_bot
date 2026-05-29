@@ -1,83 +1,86 @@
 import { useState } from "react";
 
+import "./games/sudoku/style.css";
+
+import HomePage from "./pages/HomePage";
+import GamesPage from "./pages/GamesPage";
+import RatingPage from "./pages/RatingPage";
+import SudokuPage from "./pages/SudokuPage";
+
+import GameBoard from "./games/sudoku/GameBoard";
+
 export default function App() {
-  const [page, setPage] =
-    useState("home");
+const [page, setPage] =
+useState("home");
 
-  if (page === "home") {
-    return (
-      <div className="app">
-        <h1 className="title">
-          🎮 Bolish Games
-        </h1>
+return (
+<div className="app">
 
-        <button
-          className="newgame"
-          onClick={() =>
-            setPage("games")
-          }
-        >
-          🎲 O'yinlar
-        </button>
+  {page === "home" && (
+    <HomePage
+      setPage={setPage}
+    />
+  )}
 
+  {page === "games" && (
+    <GamesPage
+      setPage={setPage}
+    />
+  )}
+
+  {page === "rating" && (
+    <RatingPage
+      setPage={setPage}
+    />
+  )}
+
+  {page === "sudoku" && (
+    <SudokuPage
+      setPage={setPage}
+    />
+  )}
+
+  {page === "play" && (
+    <>
+      <div
+        style={{
+          display: "flex",
+          justifyContent:
+            "space-between",
+          alignItems:
+            "center",
+          marginBottom:
+            "15px"
+        }}
+      >
         <button
           className="stats-btn"
           onClick={() =>
-            setPage("rating")
+            setPage(
+              "sudoku"
+            )
           }
         >
-          🏆 Reyting
+          ⬅ Orqaga
         </button>
-      </div>
-    );
-  }
 
-  if (page === "games") {
-    return (
-      <div className="app">
-        <h1 className="title">
-          🎲 O'yinlar
-        </h1>
-
-        <button
-          className="newgame"
-          onClick={() =>
-            setPage("sudoku")
-          }
+        <div
+          className="title"
+          style={{
+            margin: 0,
+            fontSize:
+              "28px"
+          }}
         >
           🧩 Sudoku
-        </button>
-
-        <button
-          className="stats-btn"
-          onClick={() =>
-            setPage("home")
-          }
-        >
-          ⬅ Orqaga
-        </button>
+        </div>
       </div>
-    );
-  }
 
-  if (page === "rating") {
-    return (
-      <div className="app">
-        <h1 className="title">
-          🏆 Reyting
-        </h1>
+      <GameBoard />
+    </>
+  )}
 
-        <button
-          className="stats-btn"
-          onClick={() =>
-            setPage("home")
-          }
-        >
-          ⬅ Orqaga
-        </button>
-      </div>
-    );
-  }
+</div>
 
-  return null;
+);
 }
