@@ -57,26 +57,7 @@ setErrors(0);
     setFilled(count);
   }
 
-  function chooseCell(
-    row,
-    col
-  ) {
-    if (
-      gameOver ||
-      victory
-    )
-      return;
-
-    if (
-      fixedCells[row]?.[col]
-    )
-      return;
-
-    setSelected({
-      row,
-      col
-    });
-  }
+   function
 setSelectedNumber(
   board[row][col] || null
 );
