@@ -1,3 +1,8 @@
+import {
+  saveGame,
+  loadGame,
+  clearGame
+} from "./storage";
 import { useEffect, useState } from "react";
 import { createPuzzle } from "./sudoku";
 
