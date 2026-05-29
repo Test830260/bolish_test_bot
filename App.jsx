@@ -1,12 +1,13 @@
 import { useState } from "react";
 
-import HomePage from "./pages/HomePage";
-import GamesPage from "./pages/GamesPage";
-import RatingPage from "./pages/RatingPage";
-import SudokuPage from "./pages/SudokuPage";
+import { useState } from "react";
 
-import GameBoard from "./games/sudoku/GameBoard";
+import HomePage from "./src/pages/HomePage";
+import GamesPage from "./src/pages/GamesPage";
+import RatingPage from "./src/pages/RatingPage";
+import SudokuPage from "./src/pages/SudokuPage";
 
+import GameBoard from "./src/games/sudoku/GameBoard";
 export default function App() {
   const [page, setPage] =
     useState("home");
