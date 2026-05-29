@@ -1,82 +1,103 @@
-import { useNavigate } from "react-router-dom";
+import "../styles/games.css";
 
-export default function GamesPage() {
-  const navigate = useNavigate();
+export default function GamesPage({
+setPage
+}) {
+return (
+<div className="games-page">
 
-  return (
-    <div className="games-page">
+  <div className="page-header">
+    <h1>
+      🎲 O'yinlar
+    </h1>
 
-      <div className="page-header">
-        <h1>🎮 O'yinlar</h1>
-        <p>
-          Mavjud o'yinlar katalogi
-        </p>
-      </div>
+    <p>
+      O'zingizga mos
+      o'yinni tanlang
+    </p>
+  </div>
 
-      <div
-        className="game-card"
-        onClick={() =>
-          navigate("/sudoku")
-        }
-      >
-        <div className="game-icon">
-          🧩
-        </div>
+  <div
+    className="game-card"
+    onClick={() =>
+      setPage("sudoku")
+    }
+  >
+    <div className="game-icon">
+      🧩
+    </div>
 
-        <div className="game-info">
-          <h2>Sudoku</h2>
+    <div className="game-info">
 
-          <p>
-            Mantiqiy boshqotirma
-          </p>
+      <h2>
+        Sudoku
+      </h2>
 
-          <div className="game-tags">
-            <span>
-              ⭐ Reyting
-            </span>
+      <p>
+        Mantiqiy boshqotirma
+      </p>
 
-            <span>
-              🏆 Top 100
-            </span>
+      <div className="game-tags">
 
-            <span>
-              ⚡ Online
-            </span>
-          </div>
-        </div>
+        <span>
+          ⭐ Reyting
+        </span>
 
-        <div className="play-arrow">
-          ▶
-        </div>
-      </div>
+        <span>
+          🏆 Top 100
+        </span>
 
-      <div className="coming-section">
+        <span>
+          ⚡ Premium
+        </span>
 
-        <h2>
-          🚀 Tez kunda
-        </h2>
-
-        <div className="coming-grid">
-
-          <div className="coming-card">
-            ♟️ Shaxmat
-          </div>
-
-          <div className="coming-card">
-            ❌ XO
-          </div>
-
-          <div className="coming-card">
-            🃏 Durak
-          </div>
-
-          <div className="coming-card">
-            🀄 Mahjong
-          </div>
-
-        </div>
       </div>
 
     </div>
-  );
+
+    <div className="play-arrow">
+      ▶
+    </div>
+  </div>
+
+  <div className="coming-section">
+
+    <h2>
+      🚀 Tez kunda
+    </h2>
+
+    <div className="coming-grid">
+
+      <div className="coming-card">
+        ♟️ Shaxmat
+      </div>
+
+      <div className="coming-card">
+        ❌ XO
+      </div>
+
+      <div className="coming-card">
+        🃏 Durak
+      </div>
+
+      <div className="coming-card">
+        🀄 Mahjong
+      </div>
+
+    </div>
+
+  </div>
+
+  <button
+    className="stats-btn"
+    onClick={() =>
+      setPage("home")
+    }
+  >
+    ⬅ Orqaga
+  </button>
+
+</div>
+
+);
 }
