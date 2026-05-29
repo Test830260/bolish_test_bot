@@ -68,11 +68,9 @@ export default function GameBoard() {
       <Board
   board={game.board}
   selected={game.selected}
+  selectedNumber={game.selectedNumber}
   fixedCells={game.fixedCells}
   chooseCell={game.chooseCell}
-  selectedNumber={
-    game.selectedNumber
-  }
 />
 
       <NumberPad
