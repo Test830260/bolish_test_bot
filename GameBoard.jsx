@@ -6,42 +6,80 @@ export default function GameBoard() {
   const [board, setBoard] = useState([]);
   const [solution, setSolution] = useState([]);
   const [fixedCells, setFixedCells] = useState([]);
+
   const [selected, setSelected] = useState(null);
+
   const [errors, setErrors] = useState(0);
   const [filled, setFilled] = useState(0);
-  const [gameOver, setGameOver] = useState(false);
 
-  // ⏱ Taymer
+  const [gameOver, setGameOver] = useState(false);
+  const [victory, setVictory] = useState(false);
+
   const [seconds, setSeconds] = useState(0);
 
-  useuseEffect(() => {
-  startGame("easy");
-}, []);
-
-useEffect(() => {
-  if (gameOver) return;
-
-  const timer = setInterval(() => {
-    setSeconds((s) => s + 1);
-  }, 1000);
-
-  return () => clearInterval(timer);
-}, [gameOver]);
+  useEffect(() => {
+    startGame("easy");
+  }, []);
 
   useEffect(() => {
-    if (gameOver) return;
+    if (gameOver || victory) return;
 
     const timer = setInterval(() => {
-      setSeconds((s) => s + 1);
+      setSeconds((prev) => prev + 1);
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [gameOver]);
+  }, [gameOver, victory]);
+
+  useEffect(() => {
+    const saveData = {
+      board,
+      solution,
+      fixedCells,
+      level,
+      errors,
+      filled,
+      seconds
+    };
+
+    if (board.length) {
+      localStorage.setItem(
+        "sudoku-save",
+        JSON.stringify(saveData)
+      );
+    }
+  }, [
+    board,
+    solution,
+    fixedCells,
+    level,
+    errors,
+    filled,
+    seconds
+  ]);
+
+  function startGame(difficulty) {
+    const game = createPuzzle(difficulty);
+
+    const fixed = game.puzzle.map((row) =>
+      row.map((cell) => cell !== 0)
+    );
+
+    setBoard(game.puzzle);
+    setSolution(game.solution);
+    setFixedCells(fixed);
 
     setLevel(difficulty);
+
     setSelected(null);
+
     setErrors(0);
+
     setGameOver(false);
+
+    setVictory(false);
+
+    setSeconds(0);
 
     const count = game.puzzle
       .flat()
@@ -51,7 +89,7 @@ useEffect(() => {
   }
 
   function chooseCell(row, col) {
-    if (gameOver) return;
+    if (gameOver || victory) return;
 
     if (fixedCells[row]?.[col]) return;
 
@@ -59,9 +97,13 @@ useEffect(() => {
   }
 
   function enterNumber(num) {
-    if (!selected || gameOver) return;
+    if (!selected) return;
+
+    if (gameOver || victory) return;
 
     const { row, col } = selected;
+
+    if (fixedCells[row][col]) return;
 
     const copy = board.map((r) => [...r]);
 
@@ -72,27 +114,26 @@ useEffect(() => {
         setBoard(copy);
 
         const newFilled = filled + 1;
+
         setFilled(newFilled);
 
         if (newFilled === 81) {
-          alert("🎉 Tabriklaymiz! Sudoku yechildi.");
-          setGameOver(true);
+          setVictory(true);
         }
       }
     } else {
-      const nextErrors = errors + 1;
+      const newErrors = errors + 1;
 
-      setErrors(nextErrors);
+      setErrors(newErrors);
 
-      if (nextErrors >= 3) {
-        alert("💀 3 ta xato! O'yin tugadi.");
+      if (newErrors >= 3) {
         setGameOver(true);
       }
     }
   }
 
   function eraseCell() {
-    if (!selected || gameOver) return;
+    if (!selected) return;
 
     const { row, col } = selected;
 
@@ -105,28 +146,58 @@ useEffect(() => {
     copy[row][col] = 0;
 
     setBoard(copy);
-    setFilled(filled - 1);
+
+    setFilled((prev) => prev - 1);
+  }
+
+  function formatTime() {
+    const mins = Math.floor(seconds / 60);
+
+    const secs = seconds % 60;
+
+    return `${String(mins).padStart(2, "0")}:${String(
+      secs
+    ).padStart(2, "0")}`;
   }
 
   return (
     <>
+      <div
+        style={{
+          textAlign: "center",
+          marginBottom: "15px",
+          color: "#38bdf8",
+          fontSize: "22px",
+          fontWeight: "bold"
+        }}
+      >
+        ⏱ {formatTime()}
+      </div>
+
       <div className="difficulty">
+
         <button
-          className={`diff-btn ${level === "easy" ? "active" : ""}`}
+          className={`diff-btn ${
+            level === "easy" ? "active" : ""
+          }`}
           onClick={() => startGame("easy")}
         >
           Oson
         </button>
 
         <button
-          className={`diff-btn ${level === "medium" ? "active" : ""}`}
+          className={`diff-btn ${
+            level === "medium" ? "active" : ""
+          }`}
           onClick={() => startGame("medium")}
         >
           O'rta
         </button>
 
         <button
-          className={`diff-btn ${level === "hard" ? "active" : ""}`}
+          className={`diff-btn ${
+            level === "hard" ? "active" : ""
+          }`}
           onClick={() => startGame("hard")}
         >
           Qiyin
@@ -190,7 +261,9 @@ useEffect(() => {
 
                 color: fixedCells[row]?.[col]
                   ? "#ffffff"
-                  : "#7dd3fc"
+                  : "#7dd3fc",
+
+                transition: "all .18s ease"
               }}
             >
               {cell === 0 ? "" : cell}
@@ -200,7 +273,7 @@ useEffect(() => {
       </div>
 
       <div className="numbers">
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
+        {[1,2,3,4,5,6,7,8,9].map((n) => (
           <button
             key={n}
             className="num-btn"
@@ -219,8 +292,13 @@ useEffect(() => {
       </button>
 
       <div className="info">
-        <span>❌ Xatolar: {errors}/3</span>
-        <span>📦 {filled}/81</span>
+        <span>
+          ❌ Xatolar: {errors}/3
+        </span>
+
+        <span>
+          📦 {filled}/81
+        </span>
       </div>
 
       <button
@@ -229,6 +307,120 @@ useEffect(() => {
       >
         🔄 Yangi o'yin
       </button>
+
+      {victory && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,.75)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 999
+          }}
+        >
+          <div
+            style={{
+              width: "90%",
+              maxWidth: "420px",
+              background: "#172033",
+              borderRadius: "24px",
+              padding: "30px",
+              textAlign: "center",
+              border: "2px solid #38bdf8",
+              boxShadow:
+                "0 0 35px rgba(56,189,248,.4)"
+            }}
+          >
+            <h1
+              style={{
+                color: "#38bdf8",
+                marginBottom: "15px"
+              }}
+            >
+              🏆 G'ALABA!
+            </h1>
+
+            <p
+              style={{
+                fontSize: "20px",
+                color: "#ffffff"
+              }}
+            >
+              Sudoku muvaffaqiyatli yechildi!
+            </p>
+
+            <p
+              style={{
+                color: "#94a3b8"
+              }}
+            >
+              ⏱ Vaqt: {formatTime()}
+            </p>
+
+            <button
+              className="newgame"
+              onClick={() => startGame(level)}
+            >
+              🔄 Yana o'ynash
+            </button>
+          </div>
+        </div>
+      )}
+
+      {gameOver && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,.75)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 999
+          }}
+        >
+          <div
+            style={{
+              width: "90%",
+              maxWidth: "420px",
+              background: "#172033",
+              borderRadius: "24px",
+              padding: "30px",
+              textAlign: "center",
+              border: "2px solid #ef4444",
+              boxShadow:
+                "0 0 35px rgba(239,68,68,.4)"
+            }}
+          >
+            <h1
+              style={{
+                color: "#ef4444",
+                marginBottom: "15px"
+              }}
+            >
+              💀 GAME OVER
+            </h1>
+
+            <p
+              style={{
+                fontSize: "20px",
+                color: "#ffffff"
+              }}
+            >
+              3 ta xato qildingiz
+            </p>
+
+            <button
+              className="newgame"
+              onClick={() => startGame(level)}
+            >
+              🔄 Qayta boshlash
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
-    }
+}
