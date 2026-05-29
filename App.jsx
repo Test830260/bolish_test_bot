@@ -22,10 +22,16 @@ export default function App() {
         minHeight: "100vh",
         color: "white",
         padding: 15,
-        fontFamily: "sans-serif"
+        fontFamily: "Arial"
       }}
     >
-      <h1 style={{ color: "#00ff88", textAlign: "center" }}>
+      <h1
+        style={{
+          color: "#00ff88",
+          textAlign: "center",
+          marginBottom: 20
+        }}
+      >
         🧩 SUDOKU
       </h1>
 
@@ -33,7 +39,7 @@ export default function App() {
         style={{
           display: "flex",
           gap: 10,
-          marginBottom: 15
+          marginBottom: 20
         }}
       >
         <button>Oson</button>
@@ -45,28 +51,49 @@ export default function App() {
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(9,1fr)",
-          gap: 2,
-          border: "3px solid #00ff88"
+          border: "4px solid #00ff88",
+          maxWidth: 620,
+          margin: "0 auto"
         }}
       >
-        {board.flat().map((cell, i) => (
-          <div
-            key={i}
-            onClick={() => setSelected(i)}
-            style={{
-              height: 40,
-              background:
-                selected === i ? "#00ff8844" : "#222",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              border: "1px solid #00ff88",
-              fontSize: 22
-            }}
-          >
-            {cell === 0 ? "" : cell}
-          </div>
-        ))}
+        {board.flat().map((cell, i) => {
+          const row = Math.floor(i / 9);
+          const col = i % 9;
+
+          return (
+            <div
+              key={i}
+              onClick={() => setSelected(i)}
+              style={{
+                height: 48,
+                background:
+                  selected === i ? "#00ff8844" : "#222",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "white",
+                fontSize: 24,
+                cursor: "pointer",
+
+                borderTop:
+                  row === 0
+                    ? "none"
+                    : row % 3 === 0
+                    ? "4px solid #00ff88"
+                    : "1px solid #00ff88",
+
+                borderLeft:
+                  col === 0
+                    ? "none"
+                    : col % 3 === 0
+                    ? "4px solid #00ff88"
+                    : "1px solid #00ff88"
+              }}
+            >
+              {cell === 0 ? "" : cell}
+            </div>
+          );
+        })}
       </div>
 
       <div
@@ -77,8 +104,16 @@ export default function App() {
           marginTop: 20
         }}
       >
-        {[1,2,3,4,5,6,7,8,9].map(n => (
-          <button key={n}>{n}</button>
+        {[1,2,3,4,5,6,7,8,9].map((n) => (
+          <button
+            key={n}
+            style={{
+              height: 40,
+              fontSize: 18
+            }}
+          >
+            {n}
+          </button>
         ))}
       </div>
 
@@ -86,15 +121,23 @@ export default function App() {
         style={{
           width: "100%",
           marginTop: 15,
-          padding: 15
+          padding: 15,
+          fontSize: 18
         }}
       >
         ❌ O'chirish
       </button>
 
-      <p style={{ marginTop: 15 }}>
-        Xatolar: 0/3
-      </p>
+      <div
+        style={{
+          marginTop: 15,
+          display: "flex",
+          justifyContent: "space-between"
+        }}
+      >
+        <span>Xatolar: 0/3</span>
+        <span>To'ldirildi: 32/81</span>
+      </div>
 
       <button
         style={{
@@ -102,12 +145,14 @@ export default function App() {
           background: "#00aa33",
           color: "white",
           padding: 15,
+          marginTop: 15,
           border: "none",
-          borderRadius: 10
+          borderRadius: 10,
+          fontSize: 18
         }}
       >
         🔄 Yangi o'yin
       </button>
     </div>
   );
-}
+              }
