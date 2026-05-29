@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./style.css";
 
 export default function App() {
   const [selected, setSelected] = useState(null);
@@ -16,143 +17,47 @@ export default function App() {
   ];
 
   return (
-    <div
-      style={{
-        background: "#111",
-        minHeight: "100vh",
-        color: "white",
-        padding: 15,
-        fontFamily: "Arial"
-      }}
-    >
-      <h1
-        style={{
-          color: "#00ff88",
-          textAlign: "center",
-          marginBottom: 20
-        }}
-      >
-        🧩 SUDOKU
-      </h1>
+    <div className="app">
+      <div className="title">🧩 Sudoku</div>
 
-      <div
-        style={{
-          display: "flex",
-          gap: 10,
-          marginBottom: 20
-        }}
-      >
-        <button>Oson</button>
-        <button>O'rta</button>
-        <button>Qiyin</button>
+      <div className="difficulty">
+        <button className="diff-btn active">Oson</button>
+        <button className="diff-btn">O'rta</button>
+        <button className="diff-btn">Qiyin</button>
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(9,1fr)",
-          border: "4px solid #00ff88",
-          maxWidth: 620,
-          margin: "0 auto"
-        }}
-      >
-        {board.flat().map((cell, i) => {
-          const row = Math.floor(i / 9);
-          const col = i % 9;
-
-          return (
-            <div
-              key={i}
-              onClick={() => setSelected(i)}
-              style={{
-                height: 48,
-                background:
-                  selected === i ? "#00ff8844" : "#222",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "white",
-                fontSize: 24,
-                cursor: "pointer",
-
-                borderTop:
-                  row === 0
-                    ? "none"
-                    : row % 3 === 0
-                    ? "4px solid #00ff88"
-                    : "1px solid #00ff88",
-
-                borderLeft:
-                  col === 0
-                    ? "none"
-                    : col % 3 === 0
-                    ? "4px solid #00ff88"
-                    : "1px solid #00ff88"
-              }}
-            >
-              {cell === 0 ? "" : cell}
-            </div>
-          );
-        })}
-      </div>
-
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(9,1fr)",
-          gap: 5,
-          marginTop: 20
-        }}
-      >
-        {[1,2,3,4,5,6,7,8,9].map((n) => (
-          <button
-            key={n}
-            style={{
-              height: 40,
-              fontSize: 18
-            }}
+      <div className="board">
+        {board.flat().map((cell, i) => (
+          <div
+            key={i}
+            onClick={() => setSelected(i)}
+            className={`cell ${selected === i ? "selected" : ""}`}
           >
+            {cell === 0 ? "" : cell}
+          </div>
+        ))}
+      </div>
+
+      <div className="numbers">
+        {[1,2,3,4,5,6,7,8,9].map((n) => (
+          <button key={n} className="num-btn">
             {n}
           </button>
         ))}
       </div>
 
-      <button
-        style={{
-          width: "100%",
-          marginTop: 15,
-          padding: 15,
-          fontSize: 18
-        }}
-      >
+      <button className="delete-btn">
         ❌ O'chirish
       </button>
 
-      <div
-        style={{
-          marginTop: 15,
-          display: "flex",
-          justifyContent: "space-between"
-        }}
-      >
+      <div className="info">
         <span>Xatolar: 0/3</span>
-        <span>To'ldirildi: 32/81</span>
+        <span>32/81</span>
       </div>
 
-      <button
-        style={{
-          width: "100%",
-          background: "#00aa33",
-          color: "white",
-          padding: 15,
-          marginTop: 15,
-          border: "none",
-          borderRadius: 10,
-          fontSize: 18
-        }}
-      >
+      <button className="newgame">
         🔄 Yangi o'yin
       </button>
     </div>
   );
-              }
+}
