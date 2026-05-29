@@ -349,3 +349,85 @@ height: 56px;
 font-size: 20px;
 }
   }
+/* ACTION BAR */
+
+.action-bar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 15px;
+}
+
+/* MODALS */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+
+  background: rgba(0,0,0,.75);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 999;
+}
+
+.modal {
+  width: 90%;
+  max-width: 420px;
+
+  background: #172033;
+
+  border-radius: 24px;
+
+  padding: 30px;
+
+  text-align: center;
+}
+
+.victory-modal {
+  border: 2px solid #38bdf8;
+
+  box-shadow:
+    0 0 35px
+    rgba(56,189,248,.4);
+}
+
+.gameover-modal {
+  border: 2px solid #ef4444;
+
+  box-shadow:
+    0 0 35px
+    rgba(239,68,68,.4);
+}
+
+/* STATS */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 10px;
+}
+
+.stat-item {
+  background: #1f2b45;
+
+  border-radius: 12px;
+
+  padding: 12px;
+
+  text-align: center;
+
+  color: white;
+
+  font-weight: 700;
+}
+
+/* PREMIUM EFFECTS */
+
+.board,
+.newgame,
+.diff-btn.active {
+  backdrop-filter: blur(10px);
+  }
