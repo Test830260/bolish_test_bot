@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { useState } from "react";
+import "./src/games/sudoku/style.css";
 
 import HomePage from "./src/pages/HomePage";
 import GamesPage from "./src/pages/GamesPage";
@@ -8,35 +8,27 @@ import RatingPage from "./src/pages/RatingPage";
 import SudokuPage from "./src/pages/SudokuPage";
 
 import GameBoard from "./src/games/sudoku/GameBoard";
+
 export default function App() {
-  const [page, setPage] =
-    useState("home");
+  const [page, setPage] = useState("home");
 
   return (
     <div className="app">
 
       {page === "home" && (
-        <HomePage
-          setPage={setPage}
-        />
+        <HomePage setPage={setPage} />
       )}
 
       {page === "games" && (
-        <GamesPage
-          setPage={setPage}
-        />
+        <GamesPage setPage={setPage} />
       )}
 
       {page === "rating" && (
-        <RatingPage
-          setPage={setPage}
-        />
+        <RatingPage setPage={setPage} />
       )}
 
       {page === "sudoku" && (
-        <SudokuPage
-          setPage={setPage}
-        />
+        <SudokuPage setPage={setPage} />
       )}
 
       {page === "play" && (
@@ -44,18 +36,14 @@ export default function App() {
           <div
             style={{
               display: "flex",
-              justifyContent:
-                "space-between",
-              alignItems:
-                "center",
+              justifyContent: "space-between",
+              alignItems: "center",
               marginBottom: "15px"
             }}
           >
             <button
               className="stats-btn"
-              onClick={() =>
-                setPage("sudoku")
-              }
+              onClick={() => setPage("sudoku")}
             >
               ⬅ Orqaga
             </button>
