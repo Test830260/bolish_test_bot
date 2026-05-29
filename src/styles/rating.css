@@ -1,0 +1,168 @@
+.rating-page {
+display: flex;
+flex-direction: column;
+gap: 20px;
+}
+
+/* HEADER */
+
+.page-header {
+text-align: center;
+}
+
+.page-header h1 {
+margin: 0;
+
+font-size: 42px;
+
+color: #38bdf8;
+
+text-shadow:
+0 0 15px
+rgba(56,189,248,.4);
+}
+
+.page-header p {
+color: #94a3b8;
+
+margin-top: 8px;
+}
+
+/* RANK CARD */
+
+.rank-card {
+display: grid;
+
+grid-template-columns:
+repeat(2,1fr);
+
+gap: 12px;
+}
+
+.rank-item {
+background:
+rgba(23,32,51,.95);
+
+border-radius: 20px;
+
+padding: 20px;
+
+text-align: center;
+
+border:
+1px solid
+rgba(56,189,248,.15);
+
+box-shadow:
+0 0 15px
+rgba(56,189,248,.12);
+}
+
+.rank-item span {
+display: block;
+
+color: #94a3b8;
+
+margin-bottom: 10px;
+}
+
+.rank-item strong {
+color: white;
+
+font-size: 28px;
+}
+
+/* LEADERBOARD */
+
+.leaderboard {
+display: flex;
+flex-direction: column;
+gap: 10px;
+}
+
+.player-card {
+display: grid;
+
+grid-template-columns:
+60px
+1fr
+100px;
+
+align-items: center;
+
+background:
+rgba(23,32,51,.9);
+
+border-radius: 16px;
+
+padding: 16px;
+
+border:
+1px solid
+rgba(255,255,255,.05);
+
+color: white;
+
+font-weight: 600;
+
+transition: .25s;
+}
+
+.player-card:hover {
+transform:
+translateY(-2px);
+
+border-color:
+rgba(56,189,248,.25);
+
+box-shadow:
+0 0 15px
+rgba(56,189,248,.15);
+}
+
+.player-card:nth-child(1) {
+border-color: gold;
+
+box-shadow:
+0 0 20px
+rgba(255,215,0,.25);
+}
+
+.player-card:nth-child(2) {
+border-color: silver;
+
+box-shadow:
+0 0 20px
+rgba(192,192,192,.2);
+}
+
+.player-card:nth-child(3) {
+border-color: #cd7f32;
+
+box-shadow:
+0 0 20px
+rgba(205,127,50,.25);
+}
+
+/* MOBILE */
+
+@media (max-width: 480px) {
+
+.page-header h1 {
+font-size: 34px;
+}
+
+.rank-item strong {
+font-size: 22px;
+}
+
+.player-card {
+grid-template-columns:
+45px
+1fr
+80px;
+
+padding: 14px;
+
+}
+  }
