@@ -1,21 +1,14 @@
 import asyncio
 import logging
 import os
+import random
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-import json
-import random
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
-
-# Sudoku generator
-def generate_solved():
-    grid = [[0]*9 for _ in range(9)]
-    solve(grid)
-    return grid
 
 def is_valid(grid, row, col, num):
     if num in grid[row]: return False
@@ -40,6 +33,11 @@ def solve(grid):
                 return False
     return True
 
+def generate_solved():
+    grid = [[0]*9 for _ in range(9)]
+    solve(grid)
+    return grid
+
 def make_puzzle(solved, removes=40):
     puzzle = [row[:] for row in solved]
     positions = [(r,c) for r in range(9) for c in range(9)]
@@ -48,7 +46,6 @@ def make_puzzle(solved, removes=40):
         puzzle[r][c] = 0
     return puzzle
 
-# O'yinlar saqlash
 games = {}
 
 def build_board(chat_id):
@@ -56,15 +53,13 @@ def build_board(chat_id):
     puzzle = game['puzzle']
     solved = game['solved']
     selected = game.get('selected', None)
-    
+
     builder = InlineKeyboardBuilder()
-    
     for r in range(9):
         for c in range(9):
             val = puzzle[r][c]
             orig = game['original'][r][c]
             idx = r*9+c
-            
             if orig != 0:
                 text = str(val)
             elif val == 0:
@@ -72,25 +67,18 @@ def build_board(chat_id):
             elif val == solved[r][c]:
                 text = str(val)
             else:
-                text = f"✗"
-            
+                text = "✗"
             if selected == idx and orig == 0:
                 text = f"[{text}]"
-            
-            builder.button(
-                text=text,
-                callback_data=f"cell_{idx}"
-            )
-    
-    builder.adjust(9)
-    
-    # Raqamlar
+            builder.button(text=text, callback_data=f"cell_{idx}")
+    builder.adjust(9, 9, 9, 9, 9, 9, 9, 9, 9)
+
     numpad = InlineKeyboardBuilder()
     for i in range(1, 10):
         numpad.button(text=str(i), callback_data=f"num_{i}")
     numpad.button(text="✕", callback_data="num_0")
-    numpad.adjust(5)
-    
+    numpad.adjust(5, 5)
+
     builder.attach(numpad)
     return builder.as_markup()
 
@@ -115,7 +103,7 @@ async def sudoku_start(message: types.Message):
         'selected': None
     }
     await message.answer(
-        "🧩 Sudoku boshlandi!\n\nKatak tanlang, keyin raqam bosing:",
+        "🧩 Sudoku boshlandi!\nKatak tanlang, keyin raqam bosing:",
         reply_markup=build_board(chat_id)
     )
 
@@ -125,15 +113,12 @@ async def cell_click(callback: types.CallbackQuery):
     if chat_id not in games:
         await callback.answer("Yangi o'yin boshlang: /sudoku")
         return
-    
     idx = int(callback.data.split("_")[1])
     r, c = idx//9, idx%9
     game = games[chat_id]
-    
     if game['original'][r][c] != 0:
         await callback.answer("Bu katak o'zgartirib bo'lmaydi!")
         return
-    
     game['selected'] = idx
     await callback.message.edit_reply_markup(
         reply_markup=build_board(chat_id)
@@ -146,31 +131,23 @@ async def num_click(callback: types.CallbackQuery):
     if chat_id not in games:
         await callback.answer("Yangi o'yin boshlang: /sudoku")
         return
-    
     game = games[chat_id]
     selected = game.get('selected')
-    
     if selected is None:
         await callback.answer("Avval katak tanlang!")
         return
-    
     r, c = selected//9, selected%9
     num = int(callback.data.split("_")[1])
     game['puzzle'][r][c] = num
-    
-    # G'alaba tekshirish
     win = all(
         game['puzzle'][i][j] == game['solved'][i][j]
         for i in range(9) for j in range(9)
     )
-    
     await callback.message.edit_reply_markup(
         reply_markup=build_board(chat_id)
     )
-    
     if win:
         await callback.message.answer("🎉 BARAKALLA! Sudoku yechildi!")
-    
     await callback.answer()
 
 async def main():
