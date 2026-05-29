@@ -74,8 +74,9 @@ export default function GameBoard() {
 />
 
       <NumberPad
-        enterNumber={game.enterNumber}
-      />
+  enterNumber={game.enterNumber}
+  setSelectedNumber={game.setSelectedNumber}
+/>
 
       <ActionBar
         hints={hints}
