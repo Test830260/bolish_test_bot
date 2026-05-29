@@ -9,7 +9,9 @@ export default function useSudokuGame() {
   const [fixedCells, setFixedCells] = useState([]);
 
   const [selected, setSelected] = useState(null);
-
+const [selectedNumber,
+  setSelectedNumber] =
+  useState(null);
   const [filled, setFilled] = useState(0);
   const [errors, setErrors] = useState(0);
 
@@ -36,9 +38,11 @@ export default function useSudokuGame() {
 
     setLevel(difficulty);
 
-    setSelected(null);
+setSelected(null);
 
-    setErrors(0);
+setSelectedNumber(null);
+
+setErrors(0);
 
     setGameOver(false);
     setVictory(false);
@@ -73,7 +77,10 @@ export default function useSudokuGame() {
       col
     });
   }
-
+setSelectedNumber(
+  board[row][col] || null
+);
+  
   function enterNumber(
     num
   ) {
@@ -104,7 +111,7 @@ export default function useSudokuGame() {
       num
     ) {
       copy[row][col] = num;
-
+setSelectedNumber(num);
       setBoard(copy);
 
       const newFilled =
@@ -171,7 +178,7 @@ export default function useSudokuGame() {
     fixedCells,
 
     selected,
-
+selectedNumber,
     errors,
     filled,
 
