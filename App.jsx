@@ -1,63 +1,113 @@
 import { useState } from "react";
 
 export default function App() {
-  const [board, setBoard] = useState([
-    [5,3,0,0,7,0,0,0,0],
-    [6,0,0,1,9,5,0,0,0],
-    [0,9,8,0,0,0,0,6,0],
-    [8,0,0,0,6,0,0,0,3],
-    [4,0,0,8,0,3,0,0,1],
-    [7,0,0,0,2,0,0,0,6],
-    [0,6,0,0,0,0,2,8,0],
-    [0,0,0,4,1,9,0,0,5],
-    [0,0,0,0,8,0,0,7,9]
-  ]);
+  const [selected, setSelected] = useState(null);
 
-  const handleChange = (r, c, value) => {
-    const newBoard = [...board];
-    newBoard[r][c] = value === "" ? 0 : Number(value);
-    setBoard(newBoard);
-  };
+  const board = [
+    [0,2,1,0,0,7,8,6,0],
+    [0,4,5,8,2,1,7,3,9],
+    [0,8,3,0,0,0,2,5,0],
+    [3,0,4,1,0,0,6,7,0],
+    [8,0,7,4,0,6,0,2,0],
+    [2,6,0,7,8,5,4,0,0],
+    [0,3,2,0,4,0,5,0,7],
+    [4,0,6,5,0,0,3,8,0],
+    [0,0,0,2,7,0,0,0,0]
+  ];
 
   return (
     <div
       style={{
-        padding: 10,
         background: "#111",
         minHeight: "100vh",
         color: "white",
-        textAlign: "center"
+        padding: 15,
+        fontFamily: "sans-serif"
       }}
     >
-      <h1>🧩 Sudoku</h1>
+      <h1 style={{ color: "#00ff88", textAlign: "center" }}>
+        🧩 SUDOKU
+      </h1>
+
+      <div
+        style={{
+          display: "flex",
+          gap: 10,
+          marginBottom: 15
+        }}
+      >
+        <button>Oson</button>
+        <button>O'rta</button>
+        <button>Qiyin</button>
+      </div>
 
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(9,40px)",
-          justifyContent: "center",
-          gap: "2px"
+          gridTemplateColumns: "repeat(9,1fr)",
+          gap: 2,
+          border: "3px solid #00ff88"
         }}
       >
-        {board.map((row, r) =>
-          row.map((cell, c) => (
-            <input
-              key={`${r}-${c}`}
-              value={cell === 0 ? "" : cell}
-              onChange={(e) =>
-                handleChange(r, c, e.target.value)
-              }
-              maxLength="1"
-              style={{
-                width: 40,
-                height: 40,
-                textAlign: "center",
-                fontSize: 20
-              }}
-            />
-          ))
-        )}
+        {board.flat().map((cell, i) => (
+          <div
+            key={i}
+            onClick={() => setSelected(i)}
+            style={{
+              height: 40,
+              background:
+                selected === i ? "#00ff8844" : "#222",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              border: "1px solid #00ff88",
+              fontSize: 22
+            }}
+          >
+            {cell === 0 ? "" : cell}
+          </div>
+        ))}
       </div>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(9,1fr)",
+          gap: 5,
+          marginTop: 20
+        }}
+      >
+        {[1,2,3,4,5,6,7,8,9].map(n => (
+          <button key={n}>{n}</button>
+        ))}
+      </div>
+
+      <button
+        style={{
+          width: "100%",
+          marginTop: 15,
+          padding: 15
+        }}
+      >
+        ❌ O'chirish
+      </button>
+
+      <p style={{ marginTop: 15 }}>
+        Xatolar: 0/3
+      </p>
+
+      <button
+        style={{
+          width: "100%",
+          background: "#00aa33",
+          color: "white",
+          padding: 15,
+          border: "none",
+          borderRadius: 10
+        }}
+      >
+        🔄 Yangi o'yin
+      </button>
     </div>
   );
 }
