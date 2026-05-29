@@ -2,7 +2,8 @@ export default function Board({
   board,
   selected,
   fixedCells,
-  chooseCell
+  chooseCell,
+  selectedNumber
 }) {
   return (
     <div className="board">
@@ -30,6 +31,10 @@ export default function Board({
           Math.floor(selected.col / 3) ===
             Math.floor(col / 3);
 
+        const sameNumber =
+          selectedNumber &&
+          cell === selectedNumber;
+
         return (
           <div
             key={i}
@@ -38,13 +43,16 @@ export default function Board({
             }
             className="cell"
             style={{
-              background: isSelected
-                ? "#38bdf855"
-                : sameRow ||
-                  sameCol ||
-                  sameBox
-                ? "#1f2b45"
-                : "#172033",
+              background:
+                isSelected
+                  ? "#38bdf855"
+                  : sameNumber
+                  ? "#2563eb66"
+                  : sameRow ||
+                    sameCol ||
+                    sameBox
+                  ? "#1f2b45"
+                  : "#172033",
 
               borderRight:
                 col === 2 || col === 5
