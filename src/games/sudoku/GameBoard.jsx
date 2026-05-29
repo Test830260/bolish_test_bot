@@ -25,7 +25,9 @@ export default function GameBoard() {
 
   const [undoCount, setUndoCount] =
     useState(5);
-
+const [selectedNumber,
+  setSelectedNumber] =
+  useState(null);
   const {
     seconds,
     formatTime
@@ -66,11 +68,12 @@ export default function GameBoard() {
       />
 
       <Board
-        board={game.board}
-        selected={game.selected}
-        fixedCells={game.fixedCells}
-        chooseCell={game.chooseCell}
-      />
+  board={game.board}
+  selected={game.selected}
+  fixedCells={game.fixedCells}
+  chooseCell={game.chooseCell}
+  selectedNumber={selectedNumber}
+/>
 
       <NumberPad
         enterNumber={game.enterNumber}
