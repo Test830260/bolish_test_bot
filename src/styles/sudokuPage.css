@@ -1,0 +1,204 @@
+.sudoku-page {
+display: flex;
+flex-direction: column;
+gap: 20px;
+}
+
+/* HERO */
+
+.sudoku-hero {
+text-align: center;
+
+background:
+linear-gradient(
+135deg,
+rgba(23,32,51,.95),
+rgba(31,43,69,.95)
+);
+
+border-radius: 28px;
+
+padding: 30px 20px;
+
+border:
+1px solid
+rgba(56,189,248,.2);
+
+box-shadow:
+0 0 30px
+rgba(56,189,248,.15);
+}
+
+.sudoku-icon {
+font-size: 72px;
+
+margin-bottom: 10px;
+
+filter:
+drop-shadow(
+0 0 15px
+rgba(56,189,248,.5)
+);
+}
+
+.sudoku-hero h1 {
+margin: 0;
+
+font-size: 42px;
+
+color: #38bdf8;
+
+text-shadow:
+0 0 15px
+rgba(56,189,248,.4);
+}
+
+.sudoku-hero p {
+color: #94a3b8;
+
+margin-top: 10px;
+
+line-height: 1.6;
+}
+
+/* PROFILE */
+
+.profile-card {
+display: grid;
+
+grid-template-columns:
+repeat(2,1fr);
+
+gap: 12px;
+}
+
+.profile-item {
+background:
+rgba(23,32,51,.95);
+
+border-radius: 18px;
+
+padding: 18px;
+
+text-align: center;
+
+border:
+1px solid
+rgba(56,189,248,.15);
+
+box-shadow:
+0 0 15px
+rgba(56,189,248,.1);
+}
+
+.profile-item span {
+display: block;
+
+color: #94a3b8;
+
+margin-bottom: 8px;
+}
+
+.profile-item strong {
+color: white;
+
+font-size: 24px;
+}
+
+/* BEST TIMES */
+
+.best-times {
+background:
+rgba(23,32,51,.95);
+
+border-radius: 24px;
+
+padding: 20px;
+
+border:
+1px solid
+rgba(56,189,248,.12);
+}
+
+.best-times h3 {
+margin-top: 0;
+
+color: #38bdf8;
+}
+
+.time-card {
+margin-top: 10px;
+
+padding: 14px;
+
+border-radius: 14px;
+
+background:
+rgba(56,189,248,.08);
+
+color: white;
+
+font-weight: 600;
+}
+
+/* PLAY BUTTON */
+
+.play-btn {
+height: 72px;
+
+border: none;
+
+border-radius: 22px;
+
+cursor: pointer;
+
+font-size: 28px;
+
+font-weight: 800;
+
+color: #08111f;
+
+background:
+linear-gradient(
+135deg,
+#38bdf8,
+#0ea5e9
+);
+
+box-shadow:
+0 0 30px
+rgba(56,189,248,.4);
+
+transition: .25s;
+}
+
+.play-btn:hover {
+transform:
+translateY(-3px);
+
+box-shadow:
+0 0 40px
+rgba(56,189,248,.55);
+}
+
+/* MOBILE */
+
+@media (max-width: 480px) {
+
+.sudoku-icon {
+font-size: 60px;
+}
+
+.sudoku-hero h1 {
+font-size: 34px;
+}
+
+.profile-item strong {
+font-size: 20px;
+}
+
+.play-btn {
+height: 64px;
+font-size: 24px;
+}
+}
