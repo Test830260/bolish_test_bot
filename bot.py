@@ -48,38 +48,42 @@ def make_puzzle(solved, removes=40):
 
 games = {}
 
-def build_board(chat_id):
+def board_text(chat_id):
     game = games[chat_id]
     puzzle = game['puzzle']
     solved = game['solved']
     selected = game.get('selected', None)
-
-    builder = InlineKeyboardBuilder()
+    lines = []
     for r in range(9):
+        row = ""
         for c in range(9):
             val = puzzle[r][c]
             orig = game['original'][r][c]
             idx = r*9+c
             if orig != 0:
-                text = str(val)
+                ch = str(val)
             elif val == 0:
-                text = "·"
+                ch = "·"
             elif val == solved[r][c]:
-                text = str(val)
+                ch = str(val)
             else:
-                text = "✗"
+                ch = "✗"
             if selected == idx and orig == 0:
-                text = f"[{text}]"
-            builder.button(text=text, callback_data=f"cell_{idx}")
-    builder.adjust(9, 9, 9, 9, 9, 9, 9, 9, 9)
+                ch = f"[{ch}]"
+            row += ch + " "
+            if c == 2 or c == 5:
+                row += "| "
+        lines.append(row)
+        if r == 2 or r == 5:
+            lines.append("------+-------+------")
+    return "```\n" + "\n".join(lines) + "\n```"
 
-    numpad = InlineKeyboardBuilder()
+def numpad_keyboard(chat_id):
+    builder = InlineKeyboardBuilder()
     for i in range(1, 10):
-        numpad.button(text=str(i), callback_data=f"num_{i}")
-    numpad.button(text="✕", callback_data="num_0")
-    numpad.adjust(5, 5)
-
-    builder.attach(numpad)
+        builder.button(text=str(i), callback_data=f"num_{i}")
+    builder.button(text="✕ O'chirish", callback_data="num_0")
+    builder.adjust(3, 3, 3, 1)
     return builder.as_markup()
 
 @dp.message(Command("start"))
@@ -100,30 +104,33 @@ async def sudoku_start(message: types.Message):
         'solved': solved,
         'puzzle': [row[:] for row in puzzle],
         'original': [row[:] for row in puzzle],
-        'selected': None
+        'selected': None,
+        'msg_id': None
     }
-    await message.answer(
-        "🧩 Sudoku boshlandi!\nKatak tanlang, keyin raqam bosing:",
-        reply_markup=build_board(chat_id)
-    )
+    text = "🧩 *Sudoku boshlandi!*\n\nRaqam tanlang va qatorni kiriting:\n\n"
+    text += board_text(chat_id)
+    text += "\n\n👆 Qaysi katakni to'ldirmoqchisiz? Masalan: `3 5` (3-qator, 5-ustun)"
+    msg = await message.answer(text, parse_mode="Markdown", reply_markup=numpad_keyboard(chat_id))
+    games[chat_id]['msg_id'] = msg.message_id
 
-@dp.callback_query(lambda c: c.data.startswith("cell_"))
-async def cell_click(callback: types.CallbackQuery):
-    chat_id = callback.message.chat.id
-    if chat_id not in games:
-        await callback.answer("Yangi o'yin boshlang: /sudoku")
-        return
-    idx = int(callback.data.split("_")[1])
-    r, c = idx//9, idx%9
+@dp.message(lambda m: m.chat.id in games and not m.text.startswith('/'))
+async def handle_position(message: types.Message):
+    chat_id = message.chat.id
     game = games[chat_id]
-    if game['original'][r][c] != 0:
-        await callback.answer("Bu katak o'zgartirib bo'lmaydi!")
-        return
-    game['selected'] = idx
-    await callback.message.edit_reply_markup(
-        reply_markup=build_board(chat_id)
-    )
-    await callback.answer()
+    try:
+        parts = message.text.strip().split()
+        r, c = int(parts[0])-1, int(parts[1])-1
+        if not (0 <= r <= 8 and 0 <= c <= 8):
+            await message.answer("❌ 1-9 oralig'ida yozing!")
+            return
+        if game['original'][r][c] != 0:
+            await message.answer("❌ Bu katak o'zgartirib bo'lmaydi!")
+            return
+        game['selected'] = r*9+c
+        text = f"🧩 *Sudoku*\n\n{board_text(chat_id)}\n\n✅ Tanlandi: {r+1}-qator, {c+1}-ustun\nEndi raqam bosing:"
+        await message.answer(text, parse_mode="Markdown", reply_markup=numpad_keyboard(chat_id))
+    except:
+        await message.answer("❌ To'g'ri format: `3 5` (qator ustun)", parse_mode="Markdown")
 
 @dp.callback_query(lambda c: c.data.startswith("num_"))
 async def num_click(callback: types.CallbackQuery):
@@ -134,7 +141,7 @@ async def num_click(callback: types.CallbackQuery):
     game = games[chat_id]
     selected = game.get('selected')
     if selected is None:
-        await callback.answer("Avval katak tanlang!")
+        await callback.answer("Avval katak tanlang! Masalan: 3 5")
         return
     r, c = selected//9, selected%9
     num = int(callback.data.split("_")[1])
@@ -143,9 +150,8 @@ async def num_click(callback: types.CallbackQuery):
         game['puzzle'][i][j] == game['solved'][i][j]
         for i in range(9) for j in range(9)
     )
-    await callback.message.edit_reply_markup(
-        reply_markup=build_board(chat_id)
-    )
+    text = f"🧩 *Sudoku*\n\n{board_text(chat_id)}\n\nQaysi katakni to'ldirmoqchisiz? Masalan: `3 5`"
+    await callback.message.edit_text(text, parse_mode="Markdown", reply_markup=numpad_keyboard(chat_id))
     if win:
         await callback.message.answer("🎉 BARAKALLA! Sudoku yechildi!")
     await callback.answer()
