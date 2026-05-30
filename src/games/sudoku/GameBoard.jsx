@@ -95,7 +95,41 @@ export default function GameBoard({ goBack }) {
           game.enterNumber
         }
       />
+<div
+  style={{
+    display: "flex",
+    justifyContent: "space-between",
+    marginTop: 16,
+    marginBottom: 16,
+    gap: 12
+  }}
+>
+  <div
+    style={{
+      flex: 1,
+      background: "#18223d",
+      borderRadius: 12,
+      padding: 12,
+      textAlign: "center",
+      border: "1px solid #ef4444"
+    }}
+  >
+    ❌ {game.errors}/3
+  </div>
 
+  <div
+    style={{
+      flex: 1,
+      background: "#18223d",
+      borderRadius: 12,
+      padding: 12,
+      textAlign: "center",
+      border: "1px solid #22c55e"
+    }}
+  >
+    ✅ {game.filled}/81
+  </div>
+</div>
       <ActionBar
         hints={hints}
         undoCount={undoCount}
