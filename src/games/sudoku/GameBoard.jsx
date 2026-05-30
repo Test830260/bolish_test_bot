@@ -1,5 +1,6 @@
 import React from "react";
 import TopBar from "./components/TopBar";
+import Board from "./components/Board";
 
 export default function GameBoard({ goBack }) {
   return (
@@ -11,6 +12,14 @@ export default function GameBoard({ goBack }) {
         score={1200}
         hints={3}
         undoCount={5}
+      />
+
+      <Board
+        board={[]}
+        selected={null}
+        selectedNumber={null}
+        fixedCells={[]}
+        chooseCell={() => {}}
       />
     </div>
   );
