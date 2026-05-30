@@ -1,6 +1,7 @@
 import React from "react";
 import TopBar from "./components/TopBar";
 import Board from "./components/Board";
+import NumberPad from "./components/NumberPad";
 
 export default function GameBoard({ goBack }) {
   return (
