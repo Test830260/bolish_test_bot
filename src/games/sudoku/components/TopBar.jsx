@@ -4,43 +4,135 @@ export default function TopBar({
   hints,
   undoCount
 }) {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
+  const formatTime = (s) => {
+    const min = Math.floor(s / 60);
+    const sec = s % 60;
 
-  const time =
-    `${String(mins).padStart(2, "0")}:${String(
-      secs
-    ).padStart(2, "0")}`;
+    return `${String(min).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+  };
 
   return (
     <div
       style={{
         display: "grid",
-        gridTemplateColumns:
-          "repeat(4,1fr)",
-        gap: "8px",
-        marginBottom: "15px"
+        gridTemplateColumns: "repeat(4,1fr)",
+        gap: "10px",
+        padding: "15px",
+        maxWidth: "620px",
+        margin: "0 auto"
       }}
     >
-      <div className="top-card">
-        ⏱<br />
-        {time}
+      <div
+        style={{
+          background: "#18223d",
+          border: "1px solid #38bdf8",
+          borderRadius: "16px",
+          padding: "12px",
+          textAlign: "center"
+        }}
+      >
+        <div
+          style={{
+            fontSize: "22px"
+          }}
+        >
+          ⏱️
+        </div>
+
+        <div
+          style={{
+            color: "#fff",
+            fontWeight: "700",
+            marginTop: "5px"
+          }}
+        >
+          {formatTime(seconds)}
+        </div>
       </div>
 
-      <div className="top-card">
-        ⭐<br />
-        {score}
+      <div
+        style={{
+          background: "#18223d",
+          border: "1px solid #fbbf24",
+          borderRadius: "16px",
+          padding: "12px",
+          textAlign: "center"
+        }}
+      >
+        <div
+          style={{
+            fontSize: "22px"
+          }}
+        >
+          ⭐
+        </div>
+
+        <div
+          style={{
+            color: "#fff",
+            fontWeight: "700",
+            marginTop: "5px"
+          }}
+        >
+          {score}
+        </div>
       </div>
 
-      <div className="top-card">
-        💡<br />
-        {hints}
+      <div
+        style={{
+          background: "#18223d",
+          border: "1px solid #fbbf24",
+          borderRadius: "16px",
+          padding: "12px",
+          textAlign: "center"
+        }}
+      >
+        <div
+          style={{
+            fontSize: "22px"
+          }}
+        >
+          💡
+        </div>
+
+        <div
+          style={{
+            color: "#fff",
+            fontWeight: "700",
+            marginTop: "5px"
+          }}
+        >
+          {hints}
+        </div>
       </div>
 
-      <div className="top-card">
-        ↩️<br />
-        {undoCount}
+      <div
+        style={{
+          background: "#18223d",
+          border: "1px solid #38bdf8",
+          borderRadius: "16px",
+          padding: "12px",
+          textAlign: "center"
+        }}
+      >
+        <div
+          style={{
+            fontSize: "22px"
+          }}
+        >
+          ↩️
+        </div>
+
+        <div
+          style={{
+            color: "#fff",
+            fontWeight: "700",
+            marginTop: "5px"
+          }}
+        >
+          {undoCount}
+        </div>
       </div>
     </div>
   );
-}
+          }
