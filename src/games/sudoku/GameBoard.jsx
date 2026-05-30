@@ -72,19 +72,7 @@ export default function GameBoard({ goBack }) {
         padding: "16px"
       }}
     >
-      {goBack && (
-        <button
-          onClick={goBack}
-          style={{
-            marginBottom: 20,
-            padding: "10px 16px",
-            borderRadius: 12
-          }}
-        >
-          ← Orqaga
-        </button>
-      )}
-
+      
       <TopBar
         seconds={seconds}
         score={1200}
