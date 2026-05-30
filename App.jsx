@@ -37,7 +37,7 @@ export default function App() {
           >
             ← Orqaga
           </button>
-          <GameBoard />
+          <GameBoard goBack={() => navigate("sudoku")} />
         </div>
       )}
     </div>
