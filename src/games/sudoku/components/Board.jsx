@@ -5,88 +5,95 @@ export default function Board({
   chooseCell,
   selectedNumber
 }) {
+  if (!board || board.length !== 9) {
+    return (
+      <div style={{ color: "white" }}>
+        Sudoku yuklanmoqda...
+      </div>
+    );
+  }
+
   return (
-    <div className="board">
-      {board.flat().map((cell, i) => {
-        const row = Math.floor(i / 9);
-        const col = i % 9;
+    <div
+      className="board"
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(9, 1fr)",
+        maxWidth: "520px",
+        margin: "20px auto"
+      }}
+    >
+      {board.map((row, rowIndex) =>
+        row.map((cell, colIndex) => {
+          const isSelected =
+            selected &&
+            selected.row === rowIndex &&
+            selected.col === colIndex;
 
-        const isSelected =
-          selected &&
-          selected.row === row &&
-          selected.col === col;
+          const isFixed =
+            fixedCells?.[rowIndex]?.[colIndex];
 
-        const sameRow =
-          selected &&
-          selected.row === row;
+          const sameNumber =
+            selectedNumber &&
+            cell === selectedNumber;
 
-        const sameCol =
-          selected &&
-          selected.col === col;
-
-        const sameBox =
-          selected &&
-          Math.floor(selected.row / 3) ===
-            Math.floor(row / 3) &&
-          Math.floor(selected.col / 3) ===
-            Math.floor(col / 3);
-
-        const sameNumber =
-          selectedNumber &&
-          cell === selectedNumber;
-
-        return (
-          <div
-            key={i}
-            onClick={() =>
-              chooseCell(row, col)
-            }
-            className="cell"
-            style={{
-              background:
-                isSelected
+          return (
+            <div
+              key={`${rowIndex}-${colIndex}`}
+              onClick={() =>
+                chooseCell(
+                  rowIndex,
+                  colIndex
+                )
+              }
+              className="cell"
+              style={{
+                background: isSelected
                   ? "#38bdf855"
                   : sameNumber
                   ? "#2563eb66"
-                  : sameRow ||
-                    sameCol ||
-                    sameBox
-                  ? "#1f2b45"
                   : "#172033",
 
-              borderRight:
-                col === 2 || col === 5
-                  ? "4px solid #38bdf8"
-                  : "1px solid #2e3b52",
+                border:
+                  "1px solid #2e3b52",
 
-              borderBottom:
-                row === 2 || row === 5
-                  ? "4px solid #38bdf8"
-                  : "1px solid #2e3b52",
+                borderRight:
+                  colIndex === 2 ||
+                  colIndex === 5
+                    ? "3px solid #38bdf8"
+                    : undefined,
 
-              cursor:
-                fixedCells[row]?.[col]
-                  ? "default"
-                  : "pointer",
+                borderBottom:
+                  rowIndex === 2 ||
+                  rowIndex === 5
+                    ? "3px solid #38bdf8"
+                    : undefined,
 
-              fontWeight:
-                fixedCells[row]?.[col]
-                  ? "700"
-                  : "400",
-
-              color:
-                fixedCells[row]?.[col]
+                color: isFixed
                   ? "#ffffff"
                   : "#7dd3fc",
 
-              transition:
-                "all .18s ease"
-            }}
-          >
-            {cell === 0 ? "" : cell}
-          </div>
-        );
-      })}
+                fontWeight: isFixed
+                  ? "700"
+                  : "400",
+
+                cursor: isFixed
+                  ? "default"
+                  : "pointer",
+
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+
+                height: "52px",
+                fontSize: "24px"
+              }}
+            >
+              {cell === 0 ? "" : cell}
+            </div>
+          );
+        })
+      )}
     </div>
   );
 }
