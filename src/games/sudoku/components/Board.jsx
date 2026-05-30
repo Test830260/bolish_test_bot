@@ -1,99 +1,105 @@
 export default function Board({
-  board,
+  board = [],
   selected,
-  fixedCells,
-  chooseCell,
-  selectedNumber
+  selectedNumber,
+  fixedCells = [],
+  chooseCell
 }) {
-  if (!board || board.length !== 9) {
+  if (!board.length) {
     return (
-      <div style={{ color: "white" }}>
-        Sudoku yuklanmoqda...
+      <div
+        style={{
+          color: "white",
+          textAlign: "center",
+          padding: 20
+        }}
+      >
+        Loading...
       </div>
     );
   }
 
   return (
     <div
-      className="board"
       style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(9, 1fr)",
-        maxWidth: "520px",
-        margin: "20px auto"
+        width: "100%",
+        maxWidth: 620,
+        margin: "20px auto",
+        padding: "0 10px",
+        boxSizing: "border-box"
       }}
     >
-      {board.map((row, rowIndex) =>
-        row.map((cell, colIndex) => {
-          const isSelected =
-            selected &&
-            selected.row === rowIndex &&
-            selected.col === colIndex;
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(9, 1fr)",
+          background: "#18223d",
+          border: "3px solid #38bdf8",
+          borderRadius: 10,
+          overflow: "hidden"
+        }}
+      >
+        {board.flatMap((row, rowIndex) =>
+          row.map((cell, colIndex) => {
+            const isSelected =
+              selected &&
+              selected.row === rowIndex &&
+              selected.col === colIndex;
 
-          const isFixed =
-            fixedCells?.[rowIndex]?.[colIndex];
+            const isFixed =
+              fixedCells[rowIndex]?.[colIndex];
 
-          const sameNumber =
-            selectedNumber &&
-            cell === selectedNumber;
+            const sameNumber =
+              selectedNumber &&
+              cell === selectedNumber;
 
-          return (
-            <div
-              key={`${rowIndex}-${colIndex}`}
-              onClick={() =>
-                chooseCell(
-                  rowIndex,
-                  colIndex
-                )
-              }
-              className="cell"
-              style={{
-                background: isSelected
-                  ? "#38bdf855"
-                  : sameNumber
-                  ? "#2563eb66"
-                  : "#172033",
+            return (
+              <div
+                key={`${rowIndex}-${colIndex}`}
+                onClick={() =>
+                  chooseCell(rowIndex, colIndex)
+                }
+                style={{
+                  aspectRatio: "1",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
 
-                border:
-                  "1px solid #2e3b52",
+                  fontSize: 22,
+                  fontWeight: "bold",
 
-                borderRight:
-                  colIndex === 2 ||
-                  colIndex === 5
-                    ? "3px solid #38bdf8"
-                    : undefined,
+                  color: isFixed
+                    ? "#ffffff"
+                    : "#38bdf8",
 
-                borderBottom:
-                  rowIndex === 2 ||
-                  rowIndex === 5
-                    ? "3px solid #38bdf8"
-                    : undefined,
+                  background: isSelected
+                    ? "#0ea5e9"
+                    : sameNumber
+                    ? "#23365f"
+                    : "#18223d",
 
-                color: isFixed
-                  ? "#ffffff"
-                  : "#7dd3fc",
+                  borderRight:
+                    colIndex === 2 ||
+                    colIndex === 5
+                      ? "3px solid #38bdf8"
+                      : "1px solid rgba(255,255,255,0.12)",
 
-                fontWeight: isFixed
-                  ? "700"
-                  : "400",
+                  borderBottom:
+                    rowIndex === 2 ||
+                    rowIndex === 5
+                      ? "3px solid #38bdf8"
+                      : "1px solid rgba(255,255,255,0.12)",
 
-                cursor: isFixed
-                  ? "default"
-                  : "pointer",
-
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-
-                height: "52px",
-                fontSize: "24px"
-              }}
-            >
-              {cell === 0 ? "" : cell}
-            </div>
-          );
-        })
-      )}
+                  transition: "0.15s"
+                }}
+              >
+                {cell !== 0 ? cell : ""}
+              </div>
+            );
+          })
+        )}
+      </div>
     </div>
   );
-}
+              }
