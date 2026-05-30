@@ -103,5 +103,3 @@ export default function RatingPage({ navigate, goBack }) {
     </div>
   );
 }
-
-import { useState } from "react";
