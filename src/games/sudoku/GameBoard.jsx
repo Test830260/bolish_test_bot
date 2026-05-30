@@ -1,7 +1,12 @@
-export default function GameBoard() {
-  return (
-    <div style={{ color: "white", padding: 20 }}>
-      GAMEBOARD TEST
-    </div>
-  );
-}
+return (
+  <div style={{ color: "white" }}>
+    <h1>GAMEBOARD TEST</h1>
+
+    <TopBar
+      seconds={seconds}
+      score={score}
+      hints={hints}
+      undoCount={undoCount}
+    />
+  </div>
+);
