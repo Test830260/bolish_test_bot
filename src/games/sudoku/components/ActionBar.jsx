@@ -6,43 +6,73 @@ export default function ActionBar({
   eraseCell
 }) {
   return (
-    <>
-      <div
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(3,1fr)",
+        gap: "12px",
+        padding: "15px",
+        maxWidth: "620px",
+        margin: "0 auto"
+      }}
+    >
+      <button
+        onClick={useHint}
         style={{
-          display: "grid",
-          gridTemplateColumns:
-            "repeat(3,1fr)",
-          gap: "10px",
-          marginTop: "15px"
+          height: "70px",
+          borderRadius: "18px",
+          border: "1px solid #fbbf24",
+          background: "#18223d",
+          color: "#fff",
+          fontSize: "30px"
         }}
       >
-        <button
-          className="hint-btn"
-          onClick={useHint}
+        💡
+        <div
+          style={{
+            fontSize: "16px",
+            marginTop: "4px"
+          }}
         >
-          💡
-          <br />
           {hints}
-        </button>
+        </div>
+      </button>
 
-        <button
-          className="undo-btn"
-          onClick={undoMove}
+      <button
+        onClick={undoMove}
+        style={{
+          height: "70px",
+          borderRadius: "18px",
+          border: "1px solid #38bdf8",
+          background: "#18223d",
+          color: "#fff",
+          fontSize: "30px"
+        }}
+      >
+        ↩️
+        <div
+          style={{
+            fontSize: "16px",
+            marginTop: "4px"
+          }}
         >
-          ↩️
-          <br />
           {undoCount}
-        </button>
+        </div>
+      </button>
 
-        <button
-          className="delete-btn"
-          onClick={eraseCell}
-        >
-          ❌
-          <br />
-          Del
-        </button>
-      </div>
-    </>
+      <button
+        onClick={eraseCell}
+        style={{
+          height: "70px",
+          borderRadius: "18px",
+          border: "1px solid #ef4444",
+          background: "#18223d",
+          color: "#fff",
+          fontSize: "30px"
+        }}
+      >
+        ❌
+      </button>
+    </div>
   );
-}
+        }
