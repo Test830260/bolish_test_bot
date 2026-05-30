@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import useSudokuGame from "./hooks/useSudokuGame";
 import useTimer from "./hooks/useTimer";
+import useRating from "./hooks/useRating";
 
 import TopBar from "./components/TopBar";
 import Board from "./components/Board";
@@ -11,155 +12,190 @@ import VictoryModal from "./components/VictoryModal";
 import GameOverModal from "./components/GameOverModal";
 
 export default function GameBoard({ goBack }) {
-  const game = useSudokuGame();
+const game = useSudokuGame();
 
-  const [hints, setHints] = useState(3);
-  const [undoCount, setUndoCount] = useState(5);
+const [hints, setHints] = useState(3);
+const [undoCount, setUndoCount] = useState(5);
 
-  const { seconds, formatTime } =
-    useTimer(
-      game.gameOver,
-      game.victory
-    );
+const {
+score,
+addWin,
+addLoss,
+useHintPenalty,
+useUndoPenalty
+} = useRating();
 
-  useEffect(() => {
-    game.startGame("easy");
-  }, []);
+const { seconds, formatTime } =
+useTimer(
+game.gameOver,
+game.victory
+);
 
-  function restartGame() {
-    game.startGame(game.level);
-    setHints(3);
-    setUndoCount(5);
-  }
+useEffect(() => {
+game.startGame("easy");
+}, []);
 
-  function useHint() {
-    if (hints <= 0) return;
+useEffect(() => {
+if (game.victory) {
+addWin({
+level: game.level,
+seconds,
+errors: game.errors,
+hintsUsed: 3 - hints,
+undosUsed: 5 - undoCount
+});
+}
+}, [game.victory]);
 
-    for (let r = 0; r < 9; r++) {
-      for (let c = 0; c < 9; c++) {
-        if (
-          game.board[r]?.[c] === 0
-        ) {
-          game.chooseCell(r, c);
-          game.enterNumber(
-            game.solution[r][c]
-          );
+useEffect(() => {
+if (game.gameOver) {
+addLoss();
+}
+}, [game.gameOver]);
 
-          setHints(
-            prev => prev - 1
-          );
+function restartGame() {
+game.startGame(game.level);
 
-          return;
-        }
-      }
+setHints(3);
+setUndoCount(5);
+
+}
+
+function useHint() {
+if (hints <= 0) return;
+
+useHintPenalty();
+
+for (let r = 0; r < 9; r++) {
+  for (let c = 0; c < 9; c++) {
+
+    if (
+      game.board[r]?.[c] === 0
+    ) {
+
+      game.chooseCell(r, c);
+
+      game.enterNumber(
+        game.solution[r][c]
+      );
+
+      setHints(prev => prev - 1);
+
+      return;
     }
   }
+}
 
-  function undoMove() {
-    if (undoCount <= 0) return;
+}
 
-    setUndoCount(
-      prev => prev - 1
-    );
-  }
+function undoMove() {
+if (undoCount <= 0) return;
 
-  return (
+useUndoPenalty();
+
+setUndoCount(prev => prev - 1);
+
+}
+
+return (
+<div
+style={{
+background: "#08080e",
+minHeight: "100vh",
+color: "white",
+padding: "16px"
+}}
+>
+<TopBar
+seconds={seconds}
+score={score}
+hints={hints}
+undoCount={undoCount}
+/>
+
+  <Board
+    board={game.board}
+    selected={game.selected}
+    fixedCells={game.fixedCells}
+    chooseCell={game.chooseCell}
+    selectedNumber={
+      game.selectedNumber
+    }
+  />
+
+  <NumberPad
+    enterNumber={
+      game.enterNumber
+    }
+  />
+
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "space-between",
+      marginTop: 16,
+      marginBottom: 16,
+      gap: 12
+    }}
+  >
     <div
       style={{
-        background: "#08080e",
-        minHeight: "100vh",
-        color: "white",
-        padding: "16px"
+        flex: 1,
+        background: "#18223d",
+        borderRadius: 12,
+        padding: 12,
+        textAlign: "center",
+        border: "1px solid #ef4444"
       }}
     >
-      
-      <TopBar
-        seconds={seconds}
-        score={1200}
-        hints={hints}
-        undoCount={undoCount}
-      />
-
-      <Board
-        board={game.board}
-        selected={game.selected}
-        fixedCells={game.fixedCells}
-        chooseCell={game.chooseCell}
-        selectedNumber={
-          game.selectedNumber
-        }
-      />
-
-      <NumberPad
-        enterNumber={
-          game.enterNumber
-        }
-      />
-<div
-  style={{
-    display: "flex",
-    justifyContent: "space-between",
-    marginTop: 16,
-    marginBottom: 16,
-    gap: 12
-  }}
->
-  <div
-    style={{
-      flex: 1,
-      background: "#18223d",
-      borderRadius: 12,
-      padding: 12,
-      textAlign: "center",
-      border: "1px solid #ef4444"
-    }}
-  >
-    ❌ {game.errors}/3
-  </div>
-
-  <div
-    style={{
-      flex: 1,
-      background: "#18223d",
-      borderRadius: 12,
-      padding: 12,
-      textAlign: "center",
-      border: "1px solid #22c55e"
-    }}
-  >
-    ✅ {game.filled}/81
-  </div>
-</div>
-      <ActionBar
-        hints={hints}
-        undoCount={undoCount}
-        useHint={useHint}
-        undoMove={undoMove}
-        eraseCell={
-          game.eraseCell
-        }
-      />
-
-      {game.victory && (
-        <VictoryModal
-          level={game.level}
-          score={1200}
-          time={formatTime()}
-          onRestart={
-            restartGame
-          }
-        />
-      )}
-
-      {game.gameOver && (
-        <GameOverModal
-          level={game.level}
-          score={1200}
-          onRestart={
-            restartGame
-          }
-        />
-      )}
+      ❌ {game.errors}/3
     </div>
-  );
-}
+
+    <div
+      style={{
+        flex: 1,
+        background: "#18223d",
+        borderRadius: 12,
+        padding: 12,
+        textAlign: "center",
+        border: "1px solid #22c55e"
+      }}
+    >
+      ✅ {game.filled}/81
+    </div>
+  </div>
+
+  <ActionBar
+    hints={hints}
+    undoCount={undoCount}
+    useHint={useHint}
+    undoMove={undoMove}
+    eraseCell={
+      game.eraseCell
+    }
+  />
+
+  {game.victory && (
+    <VictoryModal
+      level={game.level}
+      score={score}
+      time={formatTime()}
+      onRestart={
+        restartGame
+      }
+    />
+  )}
+
+  {game.gameOver && (
+    <GameOverModal
+      level={game.level}
+      score={score}
+      onRestart={
+        restartGame
+      }
+    />
+  )}
+</div>
+
+);
+  }
