@@ -14,17 +14,17 @@ const DEFAULT_STATS = {
 };
 
 export default function useStats() {
-  const [stats, setStats] =
-    useState(DEFAULT_STATS);
+  const [stats, setStats] = useState(DEFAULT_STATS);
 
   useEffect(() => {
-    const saved =
-      localStorage.getItem(
-        "sudoku_stats"
-      );
+    const saved = localStorage.getItem("sudoku_stats");
 
     if (saved) {
-      setStats(JSON.parse(saved));
+      try {
+        setStats(JSON.parse(saved));
+      } catch {
+        setStats(DEFAULT_STATS);
+      }
     }
   }, []);
 
@@ -35,44 +35,31 @@ export default function useStats() {
     );
   }, [stats]);
 
-  function addWin(
-    level,
-    seconds
-  ) {
+  function addWin(level, seconds) {
     setStats(prev => {
       const next = {
         ...prev,
-
         wins: prev.wins + 1,
-
-        totalGames:
-          prev.totalGames + 1
+        totalGames: prev.totalGames + 1
       };
 
       if (
         level === "easy" &&
-        (!next.bestEasy ||
-          seconds <
-            next.bestEasy)
+        (!next.bestEasy || seconds < next.bestEasy)
       ) {
         next.bestEasy = seconds;
       }
 
       if (
         level === "medium" &&
-        (!next.bestMedium ||
-          seconds <
-            next.bestMedium)
+        (!next.bestMedium || seconds < next.bestMedium)
       ) {
-        next.bestMedium =
-          seconds;
+        next.bestMedium = seconds;
       }
 
       if (
         level === "hard" &&
-        (!next.bestHard ||
-          seconds <
-            next.bestHard)
+        (!next.bestHard || seconds < next.bestHard)
       ) {
         next.bestHard = seconds;
       }
@@ -84,9 +71,35 @@ export default function useStats() {
   function addLoss() {
     setStats(prev => ({
       ...prev,
+      losses: prev.losses + 1,
+      totalGames: prev.totalGames + 1
+    }));
+  }
 
-      losses:
-        prev.losses + 1,
+  function addHint() {
+    setStats(prev => ({
+      ...prev,
+      hintsUsed: prev.hintsUsed + 1
+    }));
+  }
 
-      totalGames:
-        prev.totalGames +
+  function addUndo() {
+    setStats(prev => ({
+      ...prev,
+      undosUsed: prev.undosUsed + 1
+    }));
+  }
+
+  function resetStats() {
+    setStats(DEFAULT_STATS);
+  }
+
+  return {
+    stats,
+    addWin,
+    addLoss,
+    addHint,
+    addUndo,
+    resetStats
+  };
+      }
